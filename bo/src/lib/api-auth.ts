@@ -52,8 +52,7 @@ export async function requireOrganizationAdmin(
 
   // Get user's membership in the organization
   try {
-    const { PrismaClient } = await import("@/generated/prisma");
-    const prisma = new PrismaClient();
+    const { prisma } = await import('@/lib/prisma');
     
     const membership = await prisma.member.findFirst({
       where: {
@@ -62,7 +61,6 @@ export async function requireOrganizationAdmin(
       }
     });
     
-    await prisma.$disconnect();
     
     if (!membership || !hasOrganizationAdminAccess(membership.role)) {
       throw new ApiError('Organization admin access required', 403);
@@ -90,8 +88,7 @@ export async function requireOrganizationAccess(
   if (!hasAccess) {
     // Verify membership using Prisma
     try {
-      const { PrismaClient } = await import("@/generated/prisma");
-      const prisma = new PrismaClient();
+      const { prisma } = await import('@/lib/prisma');
       
       const membership = await prisma.member.findFirst({
         where: {
@@ -100,7 +97,6 @@ export async function requireOrganizationAccess(
         }
       });
       
-      await prisma.$disconnect();
       
       if (!membership) {
         throw new ApiError('Access denied to this organization', 403);

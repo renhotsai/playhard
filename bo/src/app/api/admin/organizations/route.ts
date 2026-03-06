@@ -5,9 +5,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
 import { auth } from '@/lib/auth';
 import { isSystemAdmin } from '@/lib/permissions';
+import { prisma } from '@/lib/prisma';
 
 // Enhanced response interfaces for role selection feature
 interface RoleDistribution {
@@ -50,7 +50,6 @@ interface EnhancedOrganizationsResponse {
   };
 }
 
-const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   const startTime = performance.now();
@@ -306,6 +305,5 @@ export async function GET(request: NextRequest) {
       }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }

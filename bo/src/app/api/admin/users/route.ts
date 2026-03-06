@@ -4,15 +4,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
 import { auth } from '@/lib/auth';
 import { isSystemAdmin, type RoleType } from '@/lib/permissions';
 import type { 
+import { prisma } from '@/lib/prisma';
   SystemUserWithOrganizations, 
   SystemUsersResponse 
 } from '@/types/user-management';
 
-const prisma = new PrismaClient();
 
 interface CreateUserFormData {
   name: string;
@@ -256,7 +255,6 @@ export async function POST(request: NextRequest) {
   } finally {
     // Ensure Prisma disconnection if used
     try {
-      await prisma.$disconnect();
     } catch (disconnectError) {
       console.warn('Prisma disconnect warning:', disconnectError);
     }
@@ -366,6 +364,5 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }

@@ -3,7 +3,8 @@
  * Simplified permission management using direct permission grants
  */
 
-import { PrismaClient, Permission as PrismaPermission } from "@/generated/prisma";
+import { type PrismaClient, Permission as PrismaPermission } from "@/generated/prisma";
+import { prisma } from "@/lib/prisma";
 
 export type SubjectType = "user" | "team";
 export type Resource = "user" | "team" | "organization" | "report" | "store" | "game" | "system_role" | "organization_role" | "permission";
@@ -30,7 +31,7 @@ export class PermissionService {
   private prisma: PrismaClient;
 
   constructor() {
-    this.prisma = new PrismaClient();
+    this.prisma = prisma;
   }
 
   /**
@@ -371,12 +372,6 @@ export class PermissionService {
     return Array.from(permissionMap.values());
   }
 
-  /**
-   * Clean up resources
-   */
-  async disconnect(): Promise<void> {
-    await this.prisma.$disconnect();
-  }
 }
 
 export const permissionService = new PermissionService();

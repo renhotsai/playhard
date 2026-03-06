@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { isSystemAdmin } from '@/lib/permissions';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   // Get session and check authentication
@@ -27,8 +28,6 @@ export async function GET(request: NextRequest) {
   if (isSystemAdmin(session.user.role || '')) {
     try {
       // For system admin: get all organizations using Prisma
-      const { PrismaClient } = await import("@/generated/prisma");
-      const prisma = new PrismaClient();
       
       // Build search filter
       const searchFilter = search ? {
@@ -57,7 +56,6 @@ export async function GET(request: NextRequest) {
         // Don't apply pagination here for system admin - we'll do it manually for consistency
       });
       
-      await prisma.$disconnect();
 
       // Better Auth returns data directly, not wrapped
       if (!allOrganizations || allOrganizations.length === 0) {
@@ -131,8 +129,6 @@ export async function GET(request: NextRequest) {
     
     // For Better Auth compliance: Use Prisma to get all user organizations
     // This is the recommended approach when Better Auth doesn't provide the specific API
-    const { PrismaClient } = await import("@/generated/prisma");
-    const prisma = new PrismaClient();
     
     // Build search filter for regular users
     const userSearchFilter = search ? {
@@ -170,7 +166,6 @@ export async function GET(request: NextRequest) {
       members: [] // Will be populated if needed
     }));
     
-    await prisma.$disconnect();
     
   } catch (error) {
     console.error('Error fetching user organizations:', error);

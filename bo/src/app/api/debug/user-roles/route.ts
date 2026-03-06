@@ -4,9 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
 
 export async function GET() {
   try {
@@ -54,7 +53,6 @@ export async function GET() {
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -93,6 +91,5 @@ export async function POST(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   } finally {
-    await prisma.$disconnect();
   }
 }

@@ -5,13 +5,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
 import { auth } from '@/lib/auth';
 import { hasOrganizationAdminAccess } from '@/lib/permissions';
 import { userManagementValidators } from '@/lib/form-validators';
 import type { UserCreationResult } from '@/types/user-management';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
 
 interface InviteMemberData {
   name: string;
@@ -208,7 +207,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -267,6 +265,5 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/generated/prisma";
 import { withOrganizationAccess, withOrganizationAdmin } from "@/lib/api-auth";
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
 
 // GET: List users in organization (requires organization membership)
 export const GET = withOrganizationAccess(async (

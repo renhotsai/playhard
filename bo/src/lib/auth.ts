@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
+import { prisma } from '@/lib/prisma';
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@/generated/prisma";
 import { 
   admin,
   magicLink, 
@@ -9,8 +9,6 @@ import {
   username 
 } from "better-auth/plugins";
 
-
-const prisma = new PrismaClient();
 
 export const auth = betterAuth({
   // Database configuration

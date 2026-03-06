@@ -5,15 +5,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
 import { auth } from '@/lib/auth';
 import { hasOrganizationAdminAccess } from '@/lib/permissions';
 import type { 
+import { prisma } from '@/lib/prisma';
   OrganizationMemberWithDetails, 
   OrganizationMembersResponse 
 } from '@/types/user-management';
 
-const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
@@ -143,6 +142,5 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }

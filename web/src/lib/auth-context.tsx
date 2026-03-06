@@ -5,8 +5,8 @@ import { useSession } from "@/lib/auth-client";
 import type { Session } from "better-auth/types";
 
 interface AuthContextType {
-  session: any | null;
-  user: any | null;
+  session: Session | null;
+  user: Session["user"] | null;
   loading: boolean;
 }
 

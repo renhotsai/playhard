@@ -4,11 +4,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
 import { auth } from '@/lib/auth';
 import { isSystemAdmin } from '@/lib/permissions';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
 
 interface RouteParams {
   params: Promise<{
@@ -82,7 +81,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -193,6 +191,5 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }

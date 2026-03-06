@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { permissionService } from '@/lib/permissions/permission-service';
 import { isSystemAdmin } from '@/lib/permissions';
-import { PrismaClient } from '@/generated/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
@@ -23,11 +23,10 @@ export async function GET(
     }
 
     // Get all permission limits for the organization
-    const prisma = new PrismaClient();
+    const { prisma } = await import('@/lib/prisma');
     const limits = await prisma.organizationPermissionLimit.findMany({
       where: { organizationId }
     });
-    await prisma.$disconnect();
 
     // Transform to matrix format
     const resources = ["user", "team", "organization", "report", "store", "game"];

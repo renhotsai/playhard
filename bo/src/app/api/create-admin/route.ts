@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { prisma } from '@/lib/prisma';
 import { NextResponse } from "next/server";
 import { generateId } from "better-auth";
 import { APIError } from "better-auth/api";
@@ -18,8 +19,6 @@ export async function GET() {
 		// Step 1: Bootstrap Security Check - Only allow if no system admin exists
 		console.log("[CREATE-SYSTEM-ADMIN] Checking for existing system administrators");
 		
-		const { PrismaClient } = await import("@/generated/prisma");
-		const prisma = new PrismaClient();
 		
 		try {
 			// Check if any system admin already exists
@@ -31,7 +30,6 @@ export async function GET() {
 			
 			if (existingAdmin) {
 				console.log("[CREATE-SYSTEM-ADMIN] System admin already exists, bootstrap completed");
-				await prisma.$disconnect();
 				return NextResponse.json({
 					error: "System bootstrap already completed. A system administrator already exists.",
 					suggestion: "Use the existing admin account to manage users and organizations.",
@@ -43,10 +41,8 @@ export async function GET() {
 			console.log("[CREATE-SYSTEM-ADMIN] No system admin found, proceeding with bootstrap");
 			
 		} catch (dbError) {
-			await prisma.$disconnect();
 			throw dbError;
 		} finally {
-			await prisma.$disconnect();
 		}
 		
 		// Step 2: Create first system administrator using Better Auth Admin Plugin API
@@ -95,13 +91,11 @@ export async function GET() {
 					// This is the officially acknowledged fallback until Better Auth adds admin.updateUser
 					console.log("[CREATE-SYSTEM-ADMIN] Falling back to direct database update (documented workaround)");
 					try {
-						const { PrismaClient } = await import("@/generated/prisma");
-						const fallbackPrisma = new PrismaClient();
+						const { prisma: fallbackPrisma } = await import('@/lib/prisma');
 						await fallbackPrisma.user.update({
 							where: { id: userResponse.user.id },
 							data: { username: 'admin' }
 						});
-						await fallbackPrisma.$disconnect();
 						console.log("[CREATE-SYSTEM-ADMIN] Username set via fallback database update");
 					} catch (fallbackError) {
 						console.warn("[CREATE-SYSTEM-ADMIN] All username setting methods failed:", fallbackError);

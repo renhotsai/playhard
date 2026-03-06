@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
 import { PermissionMiddleware } from '@/lib/permissions/permission-middleware';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   // Check permission using new permission middleware
@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const prisma = new PrismaClient();
     
     try {
       const teams = await prisma.team.findMany({
@@ -54,7 +53,6 @@ export async function GET(request: NextRequest) {
         total: formattedTeams.length
       });
     } finally {
-      await prisma.$disconnect();
     }
   } catch (error) {
     console.error('Error fetching teams:', error);

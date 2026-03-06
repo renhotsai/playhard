@@ -5,11 +5,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
 import { auth } from '@/lib/auth';
 import { validators } from '@/lib/form-validators';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
@@ -79,6 +77,5 @@ export async function GET(request: NextRequest) {
       }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }
