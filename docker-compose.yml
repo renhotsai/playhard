@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: playhard-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: playhard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: playhard123
+      POSTGRES_MULTIPLE_DATABASES: playhard_main,playhard_backoffice
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data`
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - playhard-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d playhard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: playhard-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - playhard-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: playhard-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@playhard.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - playhard-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Next.js Backoffice App (optional, for development)
+  backoffice:
+    build: .
+    container_name: playhard-backoffice
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:playhard123@postgres:5432/playhard
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - BETTER_AUTH_SECRET=docker-local-auth-secret-change-in-production
+      - BETTER_AUTH_URL=http://localhost:3000/api/auth
+      - REDIS_URL=redis://redis:6379
+      - DEFAULT_ADMIN_EMAIL=admin@playhard.local
+      - DEFAULT_ADMIN_PASSWORD=admin123
+      - DEFAULT_ADMIN_USERNAME=admin
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - playhard-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - development
+    command: >
+      sh -c "npx prisma generate && 
+             npx prisma db push && 
+             npx prisma db seed && 
+             npm run dev"
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  playhard-network:
+    driver: bridge
