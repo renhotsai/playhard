@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayHard 組織負責人邀請</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20 20h60v60h-60z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/><path d="M30 30h40v40h-40z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>');
+            opacity: 0.3;
+        }
+        .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        .role-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #7c3aed;
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .role-icon {
+            font-size: 28px;
+        }
+        .content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+            border-left: 4px solid #7c3aed;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .highlight-box p {
+            margin: 0;
+            color: #5b21b6;
+            font-weight: 600;
+        }
+        .organization-info {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 2px solid #e5e7eb;
+        }
+        .organization-info h3 {
+            color: #374151;
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .permissions-list {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .permissions-list h3 {
+            color: #374151;
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .permissions-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .permissions-list li {
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: white;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .warning-box p {
+            margin: 0;
+            color: #856404;
+            font-weight: 500;
+        }
+        .link-fallback {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #7c3aed;
+        }
+        .link-fallback p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .link-text {
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .logo {
+            display: inline-block;
+            background: rgba(255,255,255,0.95);
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .logo-text {
+            color: #7c3aed;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .next-steps {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .next-steps h3 {
+            color: #0369a1;
+            margin-top: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .next-steps ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .next-steps li {
+            color: #0369a1;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-text">PlayHard</span>
+            </div>
+            <h1>🏢 組織負責人邀請</h1>
+            <div class="role-badge">組織負責人 · 店家管理</div>
+        </div>
+        
+        <div class="content">
+            <h2><span class="role-icon">👔</span>歡迎成為組織負責人</h2>
+            <p>親愛的 <strong>{{recipientName}}</strong>，您好！</p>
+            <p>恭喜您被邀請成為 PlayHard 劇本殺管理平台的<strong>組織負責人</strong>！您將負責管理整個組織的營運和團隊。</p>
+            
+            <div class="organization-info">
+                <h3>🏪 您的組織資訊</h3>
+                <p><strong>組織名稱：</strong>{{organizationName}}</p>
+                <p><strong>組織類型：</strong>劇本殺門店</p>
+                <p><strong>負責範圍：</strong>完整組織管理權限</p>
+            </div>
+            
+            <div class="highlight-box">
+                <p>🎯 您的身份：<strong>組織負責人 (Organization Owner)</strong></p>
+                <p>🏢 管轄範圍：<strong>{{organizationName}} 完整管理權</strong></p>
+            </div>
+            
+            <div class="permissions-list">
+                <h3>🔐 您的管理權限包括：</h3>
+                <ul>
+                    <li><strong>員工管理</strong> - 邀請、管理組織內所有員工</li>
+                    <li><strong>角色分配</strong> - 指派員工角色（管理員、GM、工作人員等）</li>
+                    <li><strong>劇本管理</strong> - 管理組織的所有劇本和場次</li>
+                    <li><strong>顧客管理</strong> - 查看和管理顧客資料</li>
+                    <li><strong>營運數據</strong> - 查看組織營收和業績統計</li>
+                    <li><strong>組織設定</strong> - 修改組織資訊和營業設定</li>
+                </ul>
+            </div>
+            
+            <div class="next-steps">
+                <h3>📋 完成設定後的後續步驟：</h3>
+                <ul>
+                    <li>設定您的個人檔案和聯絡方式</li>
+                    <li>邀請您的團隊成員加入組織</li>
+                    <li>開始管理劇本和場次安排</li>
+                    <li>查看營運數據和客戶反饋</li>
+                </ul>
+            </div>
+            
+            <p>請點擊下方按鈕來完成您的帳戶設定，開始管理您的劇本殺門店。</p>
+            
+            <div class="button-container">
+                <a href="{{magicLinkUrl}}" class="cta-button">
+                    🚀 開始管理我的組織
+                </a>
+            </div>
+            
+            <div class="warning-box">
+                <p>
+                    <strong>⏰ 重要提醒：</strong>此邀請連結將在 <strong>{{expiresInMinutes}} 分鐘</strong>後失效，請盡快完成設定。
+                </p>
+            </div>
+            
+            <div class="link-fallback">
+                <p style="margin-bottom: 10px;"><strong>無法點擊按鈕？</strong></p>
+                <p>請複製以下連結到您的瀏覽器中：</p>
+                <div class="link-text">{{magicLinkUrl}}</div>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 14px; color: #777;">
+                如有任何營運問題或需要協助，歡迎隨時聯繫我們的客戶服務團隊。期待與您一起打造最棒的劇本殺體驗！
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>PlayHard 劇本殺管理系統</strong></p>
+            <p>此郵件由系統自動發送，請勿直接回覆。</p>
+            <p style="margin-top: 10px; color: #999;">© 2024 PlayHard. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

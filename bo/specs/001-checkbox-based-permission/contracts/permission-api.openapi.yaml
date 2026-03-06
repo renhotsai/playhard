@@ -1,0 +1,467 @@
+openapi: 3.0.3
+info:
+  title: Checkbox Permission System API (No Admin Plugin)
+  description: API contracts for permission management without Better Auth admin plugin
+  version: 1.0.0
+  contact:
+    name: PlayHard BO Team
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+paths:
+  /permissions/matrix/{subjectType}/{subjectId}:
+    get:
+      summary: Get permission matrix for user or member
+      tags: [Permission Matrix]
+      parameters:
+        - name: subjectType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [user, member]
+        - name: subjectId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: organizationId
+          in: query
+          required: false
+          description: Required for user subjects, optional for members
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Permission matrix retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionMatrix'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        
+    patch:
+      summary: Update permissions for user or member
+      tags: [Permission Matrix]
+      parameters:
+        - name: subjectType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [user, member]
+        - name: subjectId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionUpdateRequest'
+      responses:
+        '200':
+          description: Permissions updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /permissions/check:
+    post:
+      summary: Check if subject has specific permission
+      tags: [Permission Check]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionCheckRequest'
+      responses:
+        '200':
+          description: Permission check completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionCheckResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /organizations/{organizationId}/limits:
+    get:
+      summary: Get organization permission limits (System Admin or Org Owner)
+      tags: [Organization Limits]
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Organization limits retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationLimitsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+    patch:
+      summary: Update organization permission limits (System Admin only)
+      tags: [Organization Limits]
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationLimitsUpdateRequest'
+      responses:
+        '200':
+          description: Limits updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationLimitsUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /organizations/{organizationId}/users:
+    get:
+      summary: List organization users (replacement for /api/admin/users)
+      tags: [Admin Migration]
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Users list retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrganizationUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  schemas:
+    PermissionMatrix:
+      type: object
+      properties:
+        subject:
+          $ref: '#/components/schemas/PermissionSubject'
+        organizationId:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionRow'
+      required: [subject, organizationId, permissions]
+
+    PermissionSubject:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [user, member]
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        organizationId:
+          type: string
+      required: [type, id, email]
+
+    PermissionRow:
+      type: object
+      properties:
+        resource:
+          $ref: '#/components/schemas/PermissionResource'
+        resourceLabel:
+          type: string
+        actions:
+          $ref: '#/components/schemas/PermissionActions'
+      required: [resource, resourceLabel, actions]
+
+    PermissionActions:
+      type: object
+      properties:
+        create:
+          $ref: '#/components/schemas/PermissionState'
+        read:
+          $ref: '#/components/schemas/PermissionState'
+        update:
+          $ref: '#/components/schemas/PermissionState'
+        delete:
+          $ref: '#/components/schemas/PermissionState'
+        all:
+          type: boolean
+      required: [create, read, update, delete, all]
+
+    PermissionState:
+      type: object
+      properties:
+        granted:
+          type: boolean
+        inherited:
+          type: boolean
+        source:
+          type: string
+          enum: [direct_permission, member_role, team, system_admin, org_owner]
+        disabled:
+          type: boolean
+        reason:
+          type: string
+      required: [granted, inherited, source]
+
+    PermissionResource:
+      type: string
+      enum: [user, organization, member, report, team]
+
+    PermissionUpdateRequest:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        updates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionUpdate'
+        reason:
+          type: string
+      required: [organizationId, updates]
+
+    PermissionUpdate:
+      type: object
+      properties:
+        resource:
+          $ref: '#/components/schemas/PermissionResource'
+        action:
+          type: string
+          enum: [create, read, update, delete, all]
+        granted:
+          type: boolean
+      required: [resource, action, granted]
+
+    PermissionUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        updated:
+          type: integer
+        matrix:
+          $ref: '#/components/schemas/PermissionMatrix'
+      required: [success, updated, matrix]
+
+    PermissionCheckRequest:
+      type: object
+      properties:
+        subjectType:
+          type: string
+          enum: [user, member]
+        subjectId:
+          type: string
+        organizationId:
+          type: string
+        resource:
+          $ref: '#/components/schemas/PermissionResource'
+        action:
+          type: string
+          enum: [create, read, update, delete]
+      required: [subjectType, subjectId, resource, action]
+
+    PermissionCheckResponse:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+        source:
+          type: string
+          enum: [direct_permission, member_role, team, system_admin, org_owner]
+        reason:
+          type: string
+        details:
+          type: object
+        limitations:
+          type: array
+          items:
+            type: string
+      required: [allowed, source]
+
+    OrganizationLimitsResponse:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        limits:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationLimit'
+      required: [organizationId, limits]
+
+    OrganizationLimit:
+      type: object
+      properties:
+        resource:
+          $ref: '#/components/schemas/PermissionResource'
+        action:
+          type: string
+          enum: [create, read, update, delete]
+        allowed:
+          type: boolean
+        setAt:
+          type: string
+          format: date-time
+        setBy:
+          type: string
+      required: [resource, action, allowed, setAt, setBy]
+
+    OrganizationLimitsUpdateRequest:
+      type: object
+      properties:
+        limits:
+          type: array
+          items:
+            type: object
+            properties:
+              resource:
+                $ref: '#/components/schemas/PermissionResource'
+              action:
+                type: string
+                enum: [create, read, update, delete]
+              allowed:
+                type: boolean
+            required: [resource, action, allowed]
+        reason:
+          type: string
+      required: [limits]
+
+    OrganizationLimitsUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        updated:
+          type: integer
+        organizationId:
+          type: string
+      required: [success, updated, organizationId]
+
+    OrganizationUser:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        memberRole:
+          type: string
+        lastActive:
+          type: string
+          format: date-time
+      required: [id, email]
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: object
+      required: [error]
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    BetterAuth:
+      type: apiKey
+      in: cookie
+      name: better-auth.session_token
+      description: Better Auth session cookie
+
+security:
+  - BetterAuth: []
+
+tags:
+  - name: Permission Matrix
+    description: Checkbox-based permission management
+  - name: Permission Check
+    description: Runtime permission validation
+  - name: Organization Limits
+    description: Organization-level permission restrictions
+  - name: Admin Migration
+    description: Organization-scoped admin routes (replacing /api/admin/*)

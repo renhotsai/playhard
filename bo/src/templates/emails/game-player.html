@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayHard 遊戲玩家邀請</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="3" fill="rgba(255,255,255,0.2)"/><circle cx="75" cy="25" r="3" fill="rgba(255,255,255,0.2)"/><circle cx="25" cy="75" r="3" fill="rgba(255,255,255,0.2)"/><circle cx="75" cy="75" r="3" fill="rgba(255,255,255,0.2)"/><circle cx="50" cy="50" r="3" fill="rgba(255,255,255,0.2)"/></svg>');
+            opacity: 0.4;
+        }
+        .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        .role-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #ec4899;
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .role-icon {
+            font-size: 28px;
+        }
+        .content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fef7ff 100%);
+            border-left: 4px solid #ec4899;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .highlight-box p {
+            margin: 0;
+            color: #be185d;
+            font-weight: 600;
+        }
+        .organization-info {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 2px solid #e5e7eb;
+        }
+        .organization-info h3 {
+            color: #374151;
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .benefits-list {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .benefits-list h3 {
+            color: #374151;
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .benefits-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .benefits-list li {
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            color: white;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .warning-box p {
+            margin: 0;
+            color: #856404;
+            font-weight: 500;
+        }
+        .link-fallback {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #ec4899;
+        }
+        .link-fallback p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .link-text {
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .logo {
+            display: inline-block;
+            background: rgba(255,255,255,0.95);
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .logo-text {
+            color: #ec4899;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .fun-features {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .fun-features h3 {
+            color: #166534;
+            margin-top: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .fun-features ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .fun-features li {
+            color: #166534;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .game-preview {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: #f9fafb;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            text-align: center;
+            position: relative;
+        }
+        .game-preview::before {
+            content: '🎮';
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .game-preview h3 {
+            color: #ec4899;
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .game-preview p {
+            margin: 10px 0;
+            font-size: 16px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-text">PlayHard</span>
+            </div>
+            <h1>🎮 遊戲玩家邀請</h1>
+            <div class="role-badge">遊戲玩家 · 冒險體驗者</div>
+        </div>
+        
+        <div class="content">
+            <h2><span class="role-icon">🌟</span>歡迎成為遊戲玩家</h2>
+            <p>親愛的 <strong>{{recipientName}}</strong>，您好！</p>
+            <p>恭喜您被邀請成為 PlayHard 劇本殺平台的<strong>遊戲玩家</strong>！準備好踏上充滿謎團和驚喜的冒險之旅吧！</p>
+            
+            <div class="game-preview">
+                <h3>準備好迎接刺激的推理冒險！</h3>
+                <p>在這裡，每個謎團都等待著您來揭開</p>
+                <p>每個角色都有著不為人知的秘密</p>
+            </div>
+            
+            <div class="organization-info">
+                <h3>🏪 您的遊戲場所</h3>
+                <p><strong>組織名稱：</strong>{{organizationName}}</p>
+                <p><strong>組織類型：</strong>劇本殺門店</p>
+                <p><strong>遊戲範圍：</strong>多樣化劇本體驗</p>
+            </div>
+            
+            <div class="highlight-box">
+                <p>🎯 您的身份：<strong>遊戲玩家 (Game Player)</strong></p>
+                <p>🎮 專業領域：<strong>推理解謎與角色扮演</strong></p>
+            </div>
+            
+            <div class="benefits-list">
+                <h3>🎁 您將享受到的遊戲體驗：</h3>
+                <ul>
+                    <li><strong>多元劇本</strong> - 體驗各種類型的精彩劇本故事</li>
+                    <li><strong>角色扮演</strong> - 深入各種有趣角色的內心世界</li>
+                    <li><strong>推理挑戰</strong> - 運用邏輯思維解開複雜謎團</li>
+                    <li><strong>社交互動</strong> - 與其他玩家協作或對抗</li>
+                    <li><strong>沉浸體驗</strong> - 在專業 GM 引導下享受完整故事</li>
+                    <li><strong>個人成長</strong> - 提升邏輯思考和表達能力</li>
+                </ul>
+            </div>
+            
+            <div class="fun-features">
+                <h3>🎪 特色功能搶先看：</h3>
+                <ul>
+                    <li>線上預約系統 - 輕鬆預約心儀的劇本場次</li>
+                    <li>個人遊戲記錄 - 追蹤您的遊戲歷程和成就</li>
+                    <li>社群互動 - 與其他玩家分享遊戲心得</li>
+                    <li>專屬優惠 - 享受會員限定的特別活動</li>
+                </ul>
+            </div>
+            
+            <p>無論您是推理新手還是劇本殺老玩家，這裡都有適合您的精彩內容。請點擊下方按鈕完成帳戶設定，開始您的推理冒險！</p>
+            
+            <div class="button-container">
+                <a href="{{magicLinkUrl}}" class="cta-button">
+                    🚀 開始我的推理冒險
+                </a>
+            </div>
+            
+            <div class="warning-box">
+                <p>
+                    <strong>⏰ 重要提醒：</strong>此邀請連結將在 <strong>{{expiresInMinutes}} 分鐘</strong>後失效，請盡快完成設定。
+                </p>
+            </div>
+            
+            <div class="link-fallback">
+                <p style="margin-bottom: 10px;"><strong>無法點擊按鈕？</strong></p>
+                <p>請複製以下連結到您的瀏覽器中：</p>
+                <div class="link-text">{{magicLinkUrl}}</div>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 14px; color: #777;">
+                期待在遊戲中與您相遇！如有任何問題或需要協助，隨時歡迎詢問我們的工作人員。祝您遊戲愉快！
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>PlayHard 劇本殺管理系統</strong></p>
+            <p>此郵件由系統自動發送，請勿直接回覆。</p>
+            <p style="margin-top: 10px; color: #999;">© 2024 PlayHard. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

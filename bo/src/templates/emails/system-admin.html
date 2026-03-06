@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayHard 系統管理員邀請</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="30" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="90" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+        .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        .role-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #dc2626;
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .role-icon {
+            font-size: 28px;
+        }
+        .content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+            border-left: 4px solid #dc2626;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .highlight-box p {
+            margin: 0;
+            color: #7f1d1d;
+            font-weight: 600;
+        }
+        .permissions-list {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .permissions-list h3 {
+            color: #374151;
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .permissions-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .permissions-list li {
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+            color: white;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .warning-box p {
+            margin: 0;
+            color: #856404;
+            font-weight: 500;
+        }
+        .link-fallback {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #dc2626;
+        }
+        .link-fallback p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .link-text {
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .logo {
+            display: inline-block;
+            background: rgba(255,255,255,0.95);
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .logo-text {
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .security-notice {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .security-notice p {
+            margin: 0;
+            color: #374151;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-text">PlayHard</span>
+            </div>
+            <h1>🔑 系統管理員邀請</h1>
+            <div class="role-badge">系統管理員 · 最高權限</div>
+        </div>
+        
+        <div class="content">
+            <h2><span class="role-icon">👑</span>恭喜！您已被任命為系統管理員</h2>
+            <p>親愛的 <strong>{{recipientName}}</strong>，您好！</p>
+            <p>我們很榮幸地邀請您成為 PlayHard 劇本殺管理平台的<strong>系統管理員</strong>。作為系統的最高管理者，您將擁有完整的平台控制權限。</p>
+            
+            <div class="highlight-box">
+                <p>🎯 您的身份：<strong>系統管理員 (System Administrator)</strong></p>
+                <p>🏢 管轄範圍：<strong>整個 PlayHard 平台</strong></p>
+            </div>
+            
+            <div class="permissions-list">
+                <h3>🔐 您的管理權限包括：</h3>
+                <ul>
+                    <li><strong>組織管理</strong> - 創建、編輯、刪除所有商戶組織</li>
+                    <li><strong>用戶管理</strong> - 管理平台上所有用戶帳戶</li>
+                    <li><strong>角色分配</strong> - 指派和調整用戶角色權限</li>
+                    <li><strong>系統配置</strong> - 調整平台全局設定</li>
+                    <li><strong>數據監控</strong> - 查看所有業務數據和統計</li>
+                    <li><strong>安全控制</strong> - 管理平台安全策略</li>
+                </ul>
+            </div>
+            
+            <p>請點擊下方按鈕來完成您的帳戶設定，開始您的系統管理工作。</p>
+            
+            <div class="button-container">
+                <a href="{{magicLinkUrl}}" class="cta-button">
+                    🚀 啟動系統管理權限
+                </a>
+            </div>
+            
+            <div class="warning-box">
+                <p>
+                    <strong>⏰ 重要提醒：</strong>此邀請連結將在 <strong>{{expiresInMinutes}} 分鐘</strong>後失效，請盡快完成設定。
+                </p>
+            </div>
+            
+            <div class="security-notice">
+                <p><strong>🔒 安全提醒：</strong>作為系統管理員，請務必保護好您的帳戶安全，定期更新密碼，並謹慎使用管理權限。</p>
+            </div>
+            
+            <div class="link-fallback">
+                <p style="margin-bottom: 10px;"><strong>無法點擊按鈕？</strong></p>
+                <p>請複製以下連結到您的瀏覽器中：</p>
+                <div class="link-text">{{magicLinkUrl}}</div>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 14px; color: #777;">
+                如有任何技術問題或需要協助，請聯繫技術支援團隊。歡迎加入 PlayHard 管理團隊！
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>PlayHard 劇本殺管理系統</strong></p>
+            <p>此郵件由系統自動發送，請勿直接回覆。</p>
+            <p style="margin-top: 10px; color: #999;">© 2024 PlayHard. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

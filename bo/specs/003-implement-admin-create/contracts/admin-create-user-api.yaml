@@ -1,0 +1,350 @@
+openapi: 3.0.3
+info:
+  title: Admin Create User API
+  description: API for system administrators to create different types of users
+  version: 1.0.0
+  
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /api/admin/users/create:
+    post:
+      summary: Create a new user with role assignment
+      description: |
+        Creates a new user account with appropriate role assignment.
+        System admins can create system admins and organization users.
+        Sends invitation email with account setup link.
+      tags:
+        - Admin Users
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+            examples:
+              systemAdmin:
+                summary: Create system administrator
+                value:
+                  email: "admin@example.com"
+                  name: "System Administrator"
+                  userType: "system_admin"
+              orgOwner:
+                summary: Create organization owner
+                value:
+                  email: "owner@example.com"
+                  name: "Organization Owner"
+                  userType: "organization_user"
+                  organizationId: "550e8400-e29b-41d4-a716-446655440000"
+                  organizationRole: "owner"
+              orgAdmin:
+                summary: Create organization admin
+                value:
+                  email: "orgadmin@example.com"
+                  name: "Organization Admin"
+                  userType: "organization_user"
+                  organizationId: "550e8400-e29b-41d4-a716-446655440000"
+                  organizationRole: "admin"
+              gameMaster:
+                summary: Create Game Master
+                value:
+                  email: "gamemaster@example.com"
+                  name: "Game Master"
+                  userType: "organization_user"
+                  organizationId: "550e8400-e29b-41d4-a716-446655440000"
+                  organizationRole: "gm"
+              gameStaff:
+                summary: Create Game Staff
+                value:
+                  email: "staff@example.com"
+                  name: "Game Staff Member"
+                  userType: "organization_user"
+                  organizationId: "550e8400-e29b-41d4-a716-446655440000"
+                  organizationRole: "staff"
+              gamePlayer:
+                summary: Create Game Player
+                value:
+                  email: "player@example.com"
+                  name: "Game Player"
+                  userType: "organization_user"
+                  organizationId: "550e8400-e29b-41d4-a716-446655440000"
+                  organizationRole: "player"
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+              examples:
+                success:
+                  summary: Successful user creation
+                  value:
+                    success: true
+                    user:
+                      id: "usr_12345"
+                      email: "newuser@example.com"
+                      name: "New User"
+                    invitation:
+                      id: "inv_67890"
+                      status: "sent"
+                      expiresAt: "2025-09-14T17:00:00Z"
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validationError:
+                  summary: Validation error
+                  value:
+                    success: false
+                    error:
+                      message: "Invalid email format"
+                      field: "email"
+                emailExists:
+                  summary: Email already exists
+                  value:
+                    success: false
+                    error:
+                      message: "User with this email already exists"
+                      field: "email"
+        '401':
+          description: Unauthorized - not logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error:
+                  message: "Authentication required"
+        '403':
+          description: Forbidden - not a system admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error:
+                  message: "System administrator access required"
+        '404':
+          description: Organization not found (when creating org user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error:
+                  message: "Organization not found"
+                  field: "organizationId"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error:
+                  message: "Failed to create user"
+
+  /api/admin/organizations:
+    get:
+      summary: List all organizations for role assignment
+      description: |
+        Returns a list of all organizations that can be used for 
+        organization user role assignment. Used to populate organization
+        selection dropdown in the create user form.
+      tags:
+        - Admin Organizations
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Organizations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  organizations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrganizationSummary'
+              example:
+                organizations:
+                  - id: "550e8400-e29b-41d4-a716-446655440000"
+                    name: "Acme Corporation"
+                    slug: "acme-corp"
+                  - id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+                    name: "Tech Solutions Inc"
+                    slug: "tech-solutions"
+        '401':
+          description: Unauthorized - not logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - not a system admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CreateUserRequest:
+      type: object
+      required:
+        - email
+        - name
+        - userType
+      properties:
+        email:
+          type: string
+          format: email
+          description: Valid email address for the new user
+          example: "user@example.com"
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Display name for the user
+          example: "John Doe"
+        userType:
+          type: string
+          enum: [system_admin, organization_user]
+          description: Type of user to create
+        organizationId:
+          type: string
+          format: uuid
+          description: Required when userType is organization_user
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        organizationRole:
+          type: string
+          enum: [owner, admin, gm, staff, player]
+          description: Required when userType is organization_user. Business roles (owner, admin) for organization management. Game roles (gm, staff, player) for murder mystery gameplay
+          example: "owner"
+      # Conditional validation handled in server code
+      
+    CreateUserResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: Whether the operation succeeded
+        user:
+          type: object
+          description: Created user information (when success=true)
+          properties:
+            id:
+              type: string
+              description: Unique user ID
+              example: "usr_12345"
+            email:
+              type: string
+              format: email
+              description: User email address
+              example: "user@example.com"
+            name:
+              type: string
+              description: User display name
+              example: "John Doe"
+        invitation:
+          type: object
+          description: Invitation details (when success=true)
+          properties:
+            id:
+              type: string
+              description: Invitation ID
+              example: "inv_67890"
+            status:
+              type: string
+              enum: [sent, pending, accepted, expired]
+              description: Current invitation status
+              example: "sent"
+            expiresAt:
+              type: string
+              format: date-time
+              description: When the invitation expires
+              example: "2025-09-14T17:00:00Z"
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+          
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+          description: Always false for error responses
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+          
+    ErrorDetail:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid email format"
+        field:
+          type: string
+          description: Field name that caused the error (optional)
+          example: "email"
+        code:
+          type: string
+          description: Error code for programmatic handling (optional)
+          example: "VALIDATION_ERROR"
+          
+    OrganizationSummary:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique organization ID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          description: Organization display name
+          example: "Acme Corporation"
+        slug:
+          type: string
+          description: URL-friendly organization identifier
+          example: "acme-corp"
+
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: session
+      description: |
+        Session-based authentication using Better Auth.
+        The session cookie is automatically included by the browser.
+        
+tags:
+  - name: Admin Users
+    description: User creation and management operations
+  - name: Admin Organizations
+    description: Organization data for role assignment

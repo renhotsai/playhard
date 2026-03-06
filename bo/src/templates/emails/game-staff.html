@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayHard 遊戲工作人員邀請</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="5" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/><circle cx="70" cy="30" r="5" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/><circle cx="50" cy="60" r="5" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/><path d="M30 30 L70 30 L50 60 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>');
+            opacity: 0.3;
+        }
+        .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        .role-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #06b6d4;
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .role-icon {
+            font-size: 28px;
+        }
+        .content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #cffafe 0%, #f0fdff 100%);
+            border-left: 4px solid #06b6d4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .highlight-box p {
+            margin: 0;
+            color: #0891b2;
+            font-weight: 600;
+        }
+        .organization-info {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 2px solid #e5e7eb;
+        }
+        .organization-info h3 {
+            color: #374151;
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .responsibilities-list {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .responsibilities-list h3 {
+            color: #374151;
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .responsibilities-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .responsibilities-list li {
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .warning-box p {
+            margin: 0;
+            color: #856404;
+            font-weight: 500;
+        }
+        .link-fallback {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #06b6d4;
+        }
+        .link-fallback p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .link-text {
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .logo {
+            display: inline-block;
+            background: rgba(255,255,255,0.95);
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .logo-text {
+            color: #06b6d4;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .teamwork-tips {
+            background: #fefce8;
+            border: 1px solid #fde047;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .teamwork-tips h3 {
+            color: #a16207;
+            margin-top: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .teamwork-tips ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .teamwork-tips li {
+            color: #a16207;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .support-highlight {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            text-align: center;
+            border: 2px solid #d1d5db;
+        }
+        .support-highlight p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #374151;
+            font-weight: 600;
+        }
+        .support-highlight .emoji {
+            font-size: 24px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-text">PlayHard</span>
+            </div>
+            <h1>🤝 遊戲工作人員邀請</h1>
+            <div class="role-badge">遊戲工作人員 · 服務專家</div>
+        </div>
+        
+        <div class="content">
+            <h2><span class="role-icon">👥</span>歡迎成為遊戲工作人員</h2>
+            <p>親愛的 <strong>{{recipientName}}</strong>，您好！</p>
+            <p>恭喜您被邀請成為 PlayHard 劇本殺平台的<strong>遊戲工作人員</strong>！您將是確保遊戲順利進行的重要支柱。</p>
+            
+            <div class="support-highlight">
+                <p><span class="emoji">🌟</span>您的每一個細心服務<span class="emoji">🌟</span></p>
+                <p>都讓玩家的體驗更加完美</p>
+            </div>
+            
+            <div class="organization-info">
+                <h3>🏪 您的工作場所</h3>
+                <p><strong>組織名稱：</strong>{{organizationName}}</p>
+                <p><strong>組織類型：</strong>劇本殺門店</p>
+                <p><strong>負責範圍：</strong>遊戲支援與顧客服務</p>
+            </div>
+            
+            <div class="highlight-box">
+                <p>🎯 您的身份：<strong>遊戲工作人員 (Game Staff)</strong></p>
+                <p>🤝 專業領域：<strong>遊戲支援與顧客服務</strong></p>
+            </div>
+            
+            <div class="responsibilities-list">
+                <h3>🔧 您的主要職責包括：</h3>
+                <ul>
+                    <li><strong>遊戲準備</strong> - 協助準備遊戲道具和場地佈置</li>
+                    <li><strong>玩家接待</strong> - 熱情接待玩家，提供入場指引</li>
+                    <li><strong>技術支援</strong> - 協助處理遊戲中的技術問題</li>
+                    <li><strong>氛圍維護</strong> - 協助維持良好的遊戲氛圍</li>
+                    <li><strong>場地管理</strong> - 確保遊戲場地整潔有序</li>
+                    <li><strong>顧客服務</strong> - 回答玩家問題，提供協助</li>
+                </ul>
+            </div>
+            
+            <div class="teamwork-tips">
+                <h3>🤝 團隊合作要點：</h3>
+                <ul>
+                    <li>與 GM 密切配合，確保遊戲流程順暢</li>
+                    <li>主動關注玩家需求，提供貼心服務</li>
+                    <li>保持積極態度，創造愉快的遊戲環境</li>
+                    <li>及時反饋問題，協助改善服務品質</li>
+                </ul>
+            </div>
+            
+            <p>您的專業服務是玩家獲得絕佳體驗的關鍵。請點擊下方按鈕完成帳戶設定，開始您的服務工作。</p>
+            
+            <div class="button-container">
+                <a href="{{magicLinkUrl}}" class="cta-button">
+                    🚀 開始我的服務工作
+                </a>
+            </div>
+            
+            <div class="warning-box">
+                <p>
+                    <strong>⏰ 重要提醒：</strong>此邀請連結將在 <strong>{{expiresInMinutes}} 分鐘</strong>後失效，請盡快完成設定。
+                </p>
+            </div>
+            
+            <div class="link-fallback">
+                <p style="margin-bottom: 10px;"><strong>無法點擊按鈕？</strong></p>
+                <p>請複製以下連結到您的瀏覽器中：</p>
+                <div class="link-text">{{magicLinkUrl}}</div>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 14px; color: #777;">
+                感謝您加入我們的服務團隊！如有任何工作相關問題，歡迎隨時向同事或主管詢問。
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>PlayHard 劇本殺管理系統</strong></p>
+            <p>此郵件由系統自動發送，請勿直接回覆。</p>
+            <p style="margin-top: 10px; color: #999;">© 2024 PlayHard. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
