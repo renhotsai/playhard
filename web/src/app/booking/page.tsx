@@ -8,120 +8,124 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScriptCombobox } from "@/components/script-combobox";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ScriptCombobox } from "@/components/script-combobox";
 import LoginDialog from "@/components/login-dialog";
 import { useAuth } from "@/lib/auth-context";
-import { useScripts, useBookingInfo, useSubmitBooking } from "@/hooks/use-scripts";
-import { LogIn, Calendar, Users } from "lucide-react";
+import { useScripts, useBookingInfo, useSubmitBooking, useScriptTimeSlots } from "@/hooks/use-scripts";
+import { LogIn, Calendar, Users, CheckCircle2, XCircle } from "lucide-react";
 
 type BookingFormData = {
   name: string;
   phone: string;
   email: string;
-  script: string;
+  scriptId: string;
   date: string;
-  time: string;
+  timeSlotId: string;
   players: string;
   notes: string;
 };
 
 export default function BookingPage() {
   const [minDate, setMinDate] = useState("");
-  const [currentScript, setCurrentScript] = useState("");
+  const [currentScriptId, setCurrentScriptId] = useState("");
   const [bookingResult, setBookingResult] = useState<{ success: boolean; message: string } | null>(null);
   const { user, loading: authLoading } = useAuth();
 
   const { data: scripts, isLoading: scriptsLoading, error: scriptsError } = useScripts();
   const { data: bookingInfo, isLoading: bookingInfoLoading } = useBookingInfo();
+  const { data: timeSlots, isLoading: timeSlotsLoading } = useScriptTimeSlots(currentScriptId);
   const submitBookingMutation = useSubmitBooking();
 
-  // TanStack Form setup
   const form = useForm({
     defaultValues: {
-      name: user?.user_metadata?.full_name || "",
-      phone: user?.user_metadata?.phone || "",
+      name: user?.name || "",
+      phone: "",
       email: user?.email || "",
-      script: "",
+      scriptId: "",
       date: "",
-      time: "",
+      timeSlotId: "",
       players: "",
-      notes: ""
+      notes: "",
     } as BookingFormData,
     onSubmit: async ({ value }) => {
       try {
-        const response = await submitBookingMutation.mutateAsync(value);
+        const response = await submitBookingMutation.mutateAsync({
+          scriptId: value.scriptId,
+          timeSlotId: value.timeSlotId,
+          date: value.date,
+          time: value.timeSlotId,
+          players: value.players,
+          name: value.name,
+          phone: value.phone,
+          email: value.email || undefined,
+          notes: value.notes || undefined,
+        });
         if (response.success) {
-          setBookingResult({ success: true, message: `${response.message}　預約編號：${response.bookingId}` });
+          setBookingResult({
+            success: true,
+            message: `${response.message}　預約編號：${response.bookingId}`,
+          });
           form.reset();
+          setCurrentScriptId("");
         } else {
           setBookingResult({ success: false, message: response.message });
         }
       } catch (error) {
-        setBookingResult({ success: false, message: "預約送出時發生錯誤，請稍後再試或直接撥打客服專線。" });
+        setBookingResult({
+          success: false,
+          message: "預約送出時發生錯誤，請稍後再試或直接撥打客服專線。",
+        });
         console.error("Booking submission error:", error);
       }
-    }
+    },
   });
 
   useEffect(() => {
-    // 設定最小日期為今天+3天
     const today = new Date();
     const minBookingDate = new Date(today);
     minBookingDate.setDate(today.getDate() + 3);
-    const minDateString = minBookingDate.toISOString().split('T')[0];
-    
+    const minDateString = minBookingDate.toISOString().split("T")[0];
     setMinDate(minDateString);
-    
-    // 設定預設日期也是今天+3天
-    form.setFieldValue('date', minDateString);
+    form.setFieldValue("date", minDateString);
   }, [form]);
 
-  // Update current script and reset time when script changes
-  const updateCurrentScript = (script: string) => {
-    setCurrentScript(script);
-    form.setFieldValue('time', '');
+  const updateCurrentScript = (scriptId: string) => {
+    setCurrentScriptId(scriptId);
+    form.setFieldValue("timeSlotId", "");
   };
 
-  // Show loading state while checking authentication
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background py-8 flex items-center justify-center">
         <div className="text-center">
-          <div className="h-8 w-8 mx-auto mb-4 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <div className="h-8 w-8 mx-auto mb-4 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           <p className="text-muted-foreground">載入中...</p>
         </div>
       </div>
     );
   }
 
-  // Show login requirement if user is not authenticated
   if (!user) {
     return (
       <div className="min-h-screen bg-background py-8">
         <div className="container mx-auto px-4 max-w-2xl">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">線上預約</h1>
-            <p className="text-xl text-muted-foreground">
-              預約劇本殺體驗，開始您的推理之旅
-            </p>
+            <p className="text-xl text-muted-foreground">預約劇本殺體驗，開始您的推理之旅</p>
           </div>
-
           <Card className="text-center py-12">
             <CardContent className="space-y-6">
               <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
                 <LogIn className="h-8 w-8 text-primary" />
               </div>
-              
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold">需要登入才能預約</h2>
                 <p className="text-muted-foreground max-w-md mx-auto">
                   為了確保預約資料的準確性和安全性，請先登入或註冊您的帳號
                 </p>
               </div>
-
               <div className="space-y-4">
                 <LoginDialog>
                   <Button size="lg" className="w-full max-w-xs">
@@ -129,7 +133,6 @@ export default function BookingPage() {
                     登入 / 註冊
                   </Button>
                 </LoginDialog>
-                
                 <div className="text-sm text-muted-foreground">
                   <p>登入後即可享受：</p>
                   <div className="flex justify-center gap-6 mt-2">
@@ -151,17 +154,17 @@ export default function BookingPage() {
     );
   }
 
+  const selectedScript = scripts?.find((s) => s.id === currentScriptId);
+
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">線上預約</h1>
-          <p className="text-xl text-muted-foreground mb-4">
-            填寫以下資訊完成預約，我們將盡快與您聯繫確認
-          </p>
+          <p className="text-xl text-muted-foreground mb-4">填寫以下資訊完成預約，我們將盡快與您聯繫確認</p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm">
-            <div className="h-2 w-2 bg-green-500 rounded-full"></div>
-            <span>歡迎，{user.user_metadata?.full_name || user.email?.split('@')[0]}！</span>
+            <div className="h-2 w-2 bg-green-500 rounded-full" />
+            <span>歡迎，{user.name || user.email?.split("@")[0]}！</span>
           </div>
         </div>
 
@@ -173,28 +176,24 @@ export default function BookingPage() {
                 <CardDescription>請詳細填寫以下資訊</CardDescription>
               </CardHeader>
               <CardContent>
-                <form 
+                <form
                   onSubmit={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     void form.handleSubmit();
-                  }} 
+                  }}
                   className="space-y-6"
                 >
                   <div className="grid md:grid-cols-2 gap-4">
                     <form.Field
                       name="name"
-                      validators={{
-                        onChange: ({ value }) => 
-                          !value ? "請輸入姓名" : undefined
-                      }}
+                      validators={{ onChange: ({ value }) => (!value ? "請輸入姓名" : undefined) }}
                     >
                       {(field) => (
                         <div>
                           <Label htmlFor={field.name} className="mb-2 block">姓名 *</Label>
                           <Input
                             id={field.name}
-                            name={field.name}
                             value={field.state.value}
                             onBlur={field.handleBlur}
                             onChange={(e) => field.handleChange(e.target.value)}
@@ -207,20 +206,16 @@ export default function BookingPage() {
                         </div>
                       )}
                     </form.Field>
-                    
+
                     <form.Field
                       name="phone"
-                      validators={{
-                        onChange: ({ value }) => 
-                          !value ? "請輸入聯絡電話" : undefined
-                      }}
+                      validators={{ onChange: ({ value }) => (!value ? "請輸入聯絡電話" : undefined) }}
                     >
                       {(field) => (
                         <div>
                           <Label htmlFor={field.name} className="mb-2 block">聯絡電話 *</Label>
                           <Input
                             id={field.name}
-                            name={field.name}
                             value={field.state.value}
                             onBlur={field.handleBlur}
                             onChange={(e) => field.handleChange(e.target.value)}
@@ -235,15 +230,12 @@ export default function BookingPage() {
                     </form.Field>
                   </div>
 
-                  <form.Field
-                    name="email"
-                  >
+                  <form.Field name="email">
                     {(field) => (
                       <div>
                         <Label htmlFor={field.name} className="mb-2 block">電子信箱</Label>
                         <Input
                           id={field.name}
-                          name={field.name}
                           type="email"
                           value={field.state.value}
                           onBlur={field.handleBlur}
@@ -255,42 +247,28 @@ export default function BookingPage() {
                   </form.Field>
 
                   <form.Field
-                    name="script"
-                    validators={{
-                      onChange: ({ value }) => 
-                        !value ? "請選擇劇本" : undefined
-                    }}
+                    name="scriptId"
+                    validators={{ onChange: ({ value }) => (!value ? "請選擇劇本" : undefined) }}
                   >
                     {(field) => (
                       <div>
-                        <Label htmlFor={field.name} className="mb-2 block">劇本選擇 *</Label>
-                        
-                        {/* Loading State */}
-                        {scriptsLoading && (
-                          <Skeleton className="h-10 w-full" />
-                        )}
-                        
-                        {/* Error State */}
+                        <Label className="mb-2 block">劇本選擇 *</Label>
+                        {scriptsLoading && <Skeleton className="h-10 w-full" />}
                         {scriptsError && (
-                          <div className="text-sm text-destructive">
-                            載入劇本列表失敗，請重新整理頁面
-                          </div>
+                          <p className="text-sm text-destructive">載入劇本列表失敗，請重新整理頁面</p>
                         )}
-                        
-                        {/* Script Selection */}
                         {scripts && !scriptsLoading && (
                           <ScriptCombobox
                             scripts={scripts}
                             value={field.state.value}
-                            onValueChange={(value) => {
-                              field.handleChange(value);
-                              updateCurrentScript(value);
+                            onValueChange={(v) => {
+                              field.handleChange(v);
+                              updateCurrentScript(v);
                             }}
                             placeholder="選擇劇本"
                             className={field.state.meta.errors.length > 0 ? "border-destructive" : ""}
                           />
                         )}
-                        
                         {field.state.meta.errors.length > 0 && (
                           <p className="text-sm text-destructive mt-1">{field.state.meta.errors[0]}</p>
                         )}
@@ -301,17 +279,13 @@ export default function BookingPage() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <form.Field
                       name="date"
-                      validators={{
-                        onChange: ({ value }) => 
-                          !value ? "請選擇預約日期" : undefined
-                      }}
+                      validators={{ onChange: ({ value }) => (!value ? "請選擇預約日期" : undefined) }}
                     >
                       {(field) => (
                         <div>
                           <Label htmlFor={field.name} className="mb-2 block">預約日期 *</Label>
                           <Input
                             id={field.name}
-                            name={field.name}
                             type="date"
                             value={field.state.value}
                             onBlur={field.handleBlur}
@@ -325,33 +299,43 @@ export default function BookingPage() {
                         </div>
                       )}
                     </form.Field>
-                    
+
                     <form.Field
-                      name="time"
-                      validators={{
-                        onChange: ({ value }) => 
-                          !value ? "請選擇時段" : undefined
-                      }}
+                      name="timeSlotId"
+                      validators={{ onChange: ({ value }) => (!value ? "請選擇時段" : undefined) }}
                     >
                       {(field) => (
                         <div>
-                          <Label htmlFor={field.name} className="mb-2 block">時段 *</Label>
-                          
-                          <Select
-                            value={field.state.value}
-                            onValueChange={(value) => field.handleChange(value)}
-                          >
-                            <SelectTrigger className={field.state.meta.errors.length > 0 ? "border-destructive" : ""}>
-                              <SelectValue placeholder="選擇時段" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="14:00-17:00">14:00-17:00 下午場</SelectItem>
-                              <SelectItem value="14:00-18:00">14:00-18:00 下午場</SelectItem>
-                              <SelectItem value="18:00-22:00">18:00-22:00 晚間場</SelectItem>
-                              <SelectItem value="19:00-22:00">19:00-22:00 晚間場</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          
+                          <Label className="mb-2 block">時段 *</Label>
+                          {timeSlotsLoading && <Skeleton className="h-10 w-full" />}
+                          {!currentScriptId && (
+                            <p className="text-sm text-muted-foreground">請先選擇劇本</p>
+                          )}
+                          {currentScriptId && !timeSlotsLoading && (
+                            <Select
+                              value={field.state.value}
+                              onValueChange={(v) => field.handleChange(v)}
+                            >
+                              <SelectTrigger
+                                className={field.state.meta.errors.length > 0 ? "border-destructive" : ""}
+                              >
+                                <SelectValue placeholder="選擇時段" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {timeSlots && timeSlots.length > 0 ? (
+                                  timeSlots.map((slot) => (
+                                    <SelectItem key={slot.id} value={slot.id}>
+                                      {slot.startTime}-{slot.endTime} {slot.label}
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <SelectItem value="none" disabled>
+                                    此劇本暫無可用時段
+                                  </SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
+                          )}
                           {field.state.meta.errors.length > 0 && (
                             <p className="text-sm text-destructive mt-1">{field.state.meta.errors[0]}</p>
                           )}
@@ -369,7 +353,7 @@ export default function BookingPage() {
                         if (isNaN(num)) return "請輸入有效數字";
                         if (num < 3 || num > 10) return "人數需在3-10人之間";
                         return undefined;
-                      }
+                      },
                     }}
                   >
                     {(field) => (
@@ -377,7 +361,6 @@ export default function BookingPage() {
                         <Label htmlFor={field.name} className="mb-2 block">遊戲人數 *</Label>
                         <Input
                           id={field.name}
-                          name={field.name}
                           type="number"
                           min="3"
                           max="10"
@@ -394,15 +377,12 @@ export default function BookingPage() {
                     )}
                   </form.Field>
 
-                  <form.Field
-                    name="notes"
-                  >
+                  <form.Field name="notes">
                     {(field) => (
                       <div>
                         <Label htmlFor={field.name} className="mb-2 block">備註</Label>
                         <Textarea
                           id={field.name}
-                          name={field.name}
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={(e) => field.handleChange(e.target.value)}
@@ -434,45 +414,40 @@ export default function BookingPage() {
           </div>
 
           <div className="space-y-6">
-            {/* Selected Script Info */}
-            {currentScript && scripts && (
+            {selectedScript && (
               <Card>
                 <CardHeader>
                   <CardTitle>所選劇本資訊</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  {(() => {
-                    const selectedScript = scripts.find(script => 
-                      `${script.title} (${script.players}, ${script.duration})` === currentScript
-                    );
-                    
-                    if (!selectedScript) return null;
-                    
-                    return (
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-semibold text-lg">{selectedScript.title}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedScript.category} • {selectedScript.players} • {selectedScript.duration}
-                            {selectedScript.difficulty && ` • 難度：${selectedScript.difficulty}`}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm leading-relaxed">{selectedScript.description}</p>
-                        </div>
-                        <div>
-                          <h5 className="font-medium mb-2">遊戲特色</h5>
-                          <div className="flex flex-wrap gap-1">
-                            {selectedScript.features.map((feature) => (
-                              <span key={feature} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
-                                {feature}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })()}
+                <CardContent className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-lg">{selectedScript.title}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedScript.category} •{" "}
+                      {selectedScript.minPlayers === selectedScript.maxPlayers
+                        ? `${selectedScript.minPlayers}人`
+                        : `${selectedScript.minPlayers}-${selectedScript.maxPlayers}人`}{" "}
+                      •{" "}
+                      {selectedScript.duration >= 60
+                        ? `${Math.round((selectedScript.duration / 60) * 10) / 10}小時`
+                        : `${selectedScript.duration}分鐘`}
+                      {selectedScript.difficulty && ` • 難度：${selectedScript.difficulty}`}
+                    </p>
+                  </div>
+                  <p className="text-sm leading-relaxed">{selectedScript.description}</p>
+                  <div>
+                    <h5 className="font-medium mb-2">遊戲特色</h5>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedScript.features.map((feature) => (
+                        <span
+                          key={feature}
+                          className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -486,41 +461,35 @@ export default function BookingPage() {
                   <div className="space-y-4">
                     <Skeleton className="h-4 w-1/3" />
                     <Skeleton className="h-16 w-full" />
-                    <Skeleton className="h-4 w-1/3" />
-                    <Skeleton className="h-16 w-full" />
                   </div>
                 ) : bookingInfo ? (
                   <>
                     <div>
                       <h4 className="font-medium text-primary mb-2">預約流程</h4>
                       <ul className="space-y-1 text-muted-foreground">
-                        {bookingInfo.policies.procedures.map((procedure, index) => (
-                          <li key={index}>• {procedure}</li>
+                        {bookingInfo.policies.procedures.map((p, i) => (
+                          <li key={i}>• {p}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary mb-2">取消政策</h4>
                       <ul className="space-y-1 text-muted-foreground">
-                        {bookingInfo.policies.cancellation.map((policy, index) => (
-                          <li key={index}>• {policy}</li>
+                        {bookingInfo.policies.cancellation.map((p, i) => (
+                          <li key={i}>• {p}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary mb-2">注意事項</h4>
                       <ul className="space-y-1 text-muted-foreground">
-                        {bookingInfo.policies.notes.map((note, index) => (
-                          <li key={index}>• {note}</li>
+                        {bookingInfo.policies.notes.map((n, i) => (
+                          <li key={i}>• {n}</li>
                         ))}
                       </ul>
                     </div>
                   </>
-                ) : (
-                  <div className="text-sm text-muted-foreground">
-                    載入預約資訊中...
-                  </div>
-                )}
+                ) : null}
               </CardContent>
             </Card>
 

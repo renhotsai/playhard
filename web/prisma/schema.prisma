@@ -1,25 +1,29 @@
+
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
+// Better Auth tables (shared with bo)
+
 model User {
-  id              String    @id
-  name            String
-  email           String    @unique
-  emailVerified   Boolean
-  image           String?
-  createdAt       DateTime
-  updatedAt       DateTime
-  displayUsername String?
-  username        String?   @unique
-  accounts        Account[]
-  sessions        Session[]
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  role          String    @default("client")
+  sessions      Session[]
+  accounts      Account[]
+  bookings      Booking[]
 
   @@map("user")
 }
@@ -28,8 +32,8 @@ model Session {
   id        String   @id
   expiresAt DateTime
   token     String   @unique
-  createdAt DateTime
-  updatedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
@@ -43,6 +47,7 @@ model Account {
   accountId             String
   providerId            String
   userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -50,20 +55,80 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@map("account")
 }
 
 model Verification {
-  id         String    @id
+  id         String   @id
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+// Business models (managed by bo, read/write by web)
+
+model Script {
+  id                 String     @id @default(cuid())
+  title              String
+  description        String     @default("")
+  category           String
+  difficulty         String
+  minPlayers         Int
+  maxPlayers         Int
+  duration           Int
+  features           String[]
+  imageUrl           String?
+  color              String?
+  isActive           Boolean    @default(true)
+  monthlyRecommended Boolean    @default(false)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  timeSlots          TimeSlot[]
+  bookings           Booking[]
+
+  @@map("script")
+}
+
+model TimeSlot {
+  id        String    @id @default(cuid())
+  scriptId  String
+  script    Script    @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+  startTime String
+  endTime   String
+  label     String
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+
+  @@map("time_slot")
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  bookingRef    String   @unique
+  scriptId      String
+  script        Script   @relation(fields: [scriptId], references: [id])
+  timeSlotId    String
+  timeSlot      TimeSlot @relation(fields: [timeSlotId], references: [id])
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  bookingDate   DateTime
+  playerCount   Int
+  notes         String?
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("booking")
 }

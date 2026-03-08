@@ -5,8 +5,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -192,4 +193,61 @@ model Store {
   updatedAt      DateTime?    @updatedAt
 
   @@map("store")
+}
+model Script {
+  id                 String     @id @default(cuid())
+  title              String
+  description        String     @default("")
+  category           String
+  difficulty         String
+  minPlayers         Int
+  maxPlayers         Int
+  duration           Int
+  features           String[]
+  imageUrl           String?
+  color              String?
+  isActive           Boolean    @default(true)
+  monthlyRecommended Boolean    @default(false)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  timeSlots          TimeSlot[]
+  bookings           Booking[]
+
+  @@map("script")
+}
+
+model TimeSlot {
+  id        String    @id @default(cuid())
+  scriptId  String
+  script    Script    @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+  startTime String
+  endTime   String
+  label     String
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+
+  @@map("time_slot")
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  bookingRef    String   @unique
+  scriptId      String
+  script        Script   @relation(fields: [scriptId], references: [id])
+  timeSlotId    String
+  timeSlot      TimeSlot @relation(fields: [timeSlotId], references: [id])
+  userId        String?
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  bookingDate   DateTime
+  playerCount   Int
+  notes         String?
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("booking")
 }

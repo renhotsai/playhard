@@ -1,8 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@/generated/prisma";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -10,14 +8,15 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false, // Set to true in production
+    requireEmailVerification: false,
   },
-  socialProviders: {
-    // Add social providers if needed
-    // google: {
-    //   clientId: process.env.GOOGLE_CLIENT_ID!,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    // },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => ({
+          data: { ...user, role: "client" },
+        }),
+      },
+    },
   },
-  // No username plugin - only email/password authentication
 });
