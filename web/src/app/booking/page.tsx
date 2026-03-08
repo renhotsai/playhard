@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScriptCombobox } from "@/components/script-combobox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2, XCircle } from "lucide-react";
 import LoginDialog from "@/components/login-dialog";
 import { useAuth } from "@/lib/auth-context";
 import { useScripts, useBookingInfo, useSubmitBooking } from "@/hooks/use-scripts";
@@ -29,6 +31,7 @@ type BookingFormData = {
 export default function BookingPage() {
   const [minDate, setMinDate] = useState("");
   const [currentScript, setCurrentScript] = useState("");
+  const [bookingResult, setBookingResult] = useState<{ success: boolean; message: string } | null>(null);
   const { user, loading: authLoading } = useAuth();
 
   const { data: scripts, isLoading: scriptsLoading, error: scriptsError } = useScripts();
@@ -51,13 +54,13 @@ export default function BookingPage() {
       try {
         const response = await submitBookingMutation.mutateAsync(value);
         if (response.success) {
-          alert(`${response.message}\n預約編號：${response.bookingId}`);
+          setBookingResult({ success: true, message: `${response.message}　預約編號：${response.bookingId}` });
           form.reset();
         } else {
-          alert(response.message);
+          setBookingResult({ success: false, message: response.message });
         }
       } catch (error) {
-        alert("預約送出時發生錯誤，請稍後再試或直接撥打客服專線。");
+        setBookingResult({ success: false, message: "預約送出時發生錯誤，請稍後再試或直接撥打客服專線。" });
         console.error("Booking submission error:", error);
       }
     }
@@ -410,9 +413,16 @@ export default function BookingPage() {
                     )}
                   </form.Field>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
+                  {bookingResult && (
+                    <Alert variant={bookingResult.success ? "default" : "destructive"}>
+                      {bookingResult.success ? <CheckCircle2 /> : <XCircle />}
+                      <AlertDescription>{bookingResult.message}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full"
                     size="lg"
                     disabled={submitBookingMutation.isPending}
                   >

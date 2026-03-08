@@ -65,8 +65,6 @@ export async function GET(request: NextRequest) {
       { error: "Failed to fetch system settings" },
       { status: 500 }
     );
-  } finally {
-  }
 }
 
 // PUT /api/system/settings - Update system settings (system admin only)
@@ -125,8 +123,6 @@ export async function PUT(request: NextRequest) {
       { error: "Failed to update system settings" },
       { status: 500 }
     );
-  } finally {
-  }
 }
 
 // GET /api/system/settings/health - System health check (system admin only)
@@ -177,6 +173,4 @@ export async function health(request: NextRequest) {
       timestamp: new Date().toISOString(),
       error: "Health check failed"
     }, { status: 500 });
-  } finally {
-  }
 }

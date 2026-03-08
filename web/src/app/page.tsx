@@ -8,7 +8,7 @@ import { useMonthlyRecommended } from "@/hooks/use-scripts";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
-  const { data: monthlyScripts, isLoading, error } = useMonthlyRecommended();
+  const { data: monthlyScripts, isLoading, error, refetch } = useMonthlyRecommended();
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Hero Section */}
@@ -55,7 +55,7 @@ export default function Home() {
           {error && (
             <div className="py-8 text-center">
               <p className="text-destructive mb-4">載入推薦劇本時發生錯誤</p>
-              <Button onClick={() => window.location.reload()} variant="outline">
+              <Button onClick={() => refetch()} variant="outline">
                 重新載入
               </Button>
             </div>

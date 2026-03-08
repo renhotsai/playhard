@@ -36,9 +36,9 @@ export default function GamesPage() {
     category: selectedCategory,
     difficulty: selectedDifficulty,
     playerCount: selectedPlayerCount,
-  });
-  
-  const allScriptsQuery = useScripts();
+  }, hasFilters);
+
+  const allScriptsQuery = useScripts(!hasFilters);
   
   // Use search results if filters are applied, otherwise use all scripts
   const { data: allScripts, isLoading, error } = hasFilters ? searchQuery : allScriptsQuery;
@@ -147,7 +147,7 @@ export default function GamesPage() {
         {error && (
           <div className="text-center py-12">
             <p className="text-destructive mb-4">載入劇本時發生錯誤</p>
-            <Button onClick={() => window.location.reload()} variant="outline">
+            <Button onClick={() => hasFilters ? searchQuery.refetch() : allScriptsQuery.refetch()} variant="outline">
               重新載入
             </Button>
           </div>

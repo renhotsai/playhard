@@ -252,12 +252,6 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-    // Ensure Prisma disconnection if used
-    try {
-    } catch (disconnectError) {
-      console.warn('Prisma disconnect warning:', disconnectError);
-    }
   }
 }
 
@@ -363,6 +357,4 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-  }
 }

@@ -128,8 +128,6 @@ export async function GET(request: NextRequest) {
       { error: "Failed to fetch users" },
       { status: 500 }
     );
-  } finally {
-  }
 }
 
 // POST /api/system/users - Create new user with system role (system admin only)
@@ -255,6 +253,4 @@ export async function POST(request: NextRequest) {
       { error: "Failed to create user" },
       { status: 500 }
     );
-  } finally {
-  }
 }

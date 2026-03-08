@@ -52,8 +52,6 @@ export async function GET(request: NextRequest) {
         teams: formattedTeams,
         total: formattedTeams.length
       });
-    } finally {
-    }
   } catch (error) {
     console.error('Error fetching teams:', error);
     return NextResponse.json(

@@ -42,8 +42,6 @@ export async function GET() {
 			
 		} catch (dbError) {
 			throw dbError;
-		} finally {
-		}
 		
 		// Step 2: Create first system administrator using Better Auth Admin Plugin API
 		console.log("[CREATE-SYSTEM-ADMIN] Creating system admin via Better Auth Admin Plugin");

@@ -15,10 +15,11 @@ export const QUERY_KEYS = {
 };
 
 // Hook for getting all scripts
-export function useScripts() {
+export function useScripts(enabled = true) {
   return useQuery({
     queryKey: QUERY_KEYS.scripts,
     queryFn: scriptsApi.getAll,
+    enabled,
   });
 }
 
@@ -58,16 +59,14 @@ export function useScriptsByDifficulty(difficulty: string) {
 }
 
 // Hook for searching scripts with filters
-export function useScriptsSearch(filters: {
-  category?: string;
-  difficulty?: string;
-  playerCount?: string;
-}) {
+export function useScriptsSearch(
+  filters: { category?: string; difficulty?: string; playerCount?: string },
+  enabled?: boolean
+) {
   return useQuery({
     queryKey: QUERY_KEYS.search(filters),
     queryFn: () => scriptsApi.search(filters),
-    // Only run query if at least one filter is provided
-    enabled: !!(filters.category || filters.difficulty || filters.playerCount),
+    enabled: enabled ?? !!(filters.category || filters.difficulty || filters.playerCount),
   });
 }
 

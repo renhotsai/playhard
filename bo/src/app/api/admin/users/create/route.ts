@@ -299,8 +299,6 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-  }
 }
 
 // GET endpoint to fetch organizations for dropdown
@@ -336,6 +334,4 @@ export async function GET(request: NextRequest) {
       { success: false, error: 'Failed to fetch organizations' },
       { status: 500 }
     );
-  } finally {
-  }
 }

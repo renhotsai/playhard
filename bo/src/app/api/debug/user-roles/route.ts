@@ -52,8 +52,6 @@ export async function GET() {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
-  } finally {
-  }
 }
 
 export async function POST(request: NextRequest) {
@@ -90,6 +88,4 @@ export async function POST(request: NextRequest) {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
-  } finally {
-  }
 }

@@ -206,8 +206,6 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-  }
 }
 
 // GET endpoint to fetch teams for the current organization
@@ -264,6 +262,4 @@ export async function GET(request: NextRequest) {
       { success: false, error: 'Failed to fetch teams' },
       { status: 500 }
     );
-  } finally {
-  }
 }

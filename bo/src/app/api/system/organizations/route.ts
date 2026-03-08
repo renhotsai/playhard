@@ -97,8 +97,6 @@ export async function GET() {
       { error: "Failed to fetch organizations" },
       { status: 500 }
     );
-  } finally {
-  }
 }
 
 // POST /api/system/organizations - Create new organization (system admin only)
@@ -205,6 +203,4 @@ export async function POST(request: NextRequest) {
       { error: "Failed to create organization" },
       { status: 500 }
     );
-  } finally {
-  }
 }

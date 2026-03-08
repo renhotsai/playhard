@@ -80,8 +80,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       },
       { status: 500 }
     );
-  } finally {
-  }
 }
 
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
@@ -190,6 +188,4 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       },
       { status: 500 }
     );
-  } finally {
-  }
 }

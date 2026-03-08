@@ -76,6 +76,4 @@ export async function GET(request: NextRequest) {
         message: 'Unable to verify email availability'
       }
     );
-  } finally {
-  }
 }
