@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
-import { getIronSession } from "iron-session";
-import { SessionData, sessionOptions } from "@/lib/session";
+import { auth } from "@/lib/auth";
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const response = NextResponse.next();
-    const session = await getIronSession<SessionData>(request, response, sessionOptions);
-    if (!session.isLoggedIn) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session || (session.user.role !== "owner" && session.user.role !== "employee")) {
       return NextResponse.json({ error: "未授權" }, { status: 401 });
     }
 
@@ -33,9 +32,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const response = NextResponse.next();
-    const session = await getIronSession<SessionData>(request, response, sessionOptions);
-    if (!session.isLoggedIn) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session || (session.user.role !== "owner" && session.user.role !== "employee")) {
       return NextResponse.json({ error: "未授權" }, { status: 401 });
     }
 
