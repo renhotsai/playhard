@@ -29,21 +29,67 @@ describe("Required file structure", () => {
     assert.ok(exists("src/lib/prisma.ts"), "src/lib/prisma.ts not found");
   });
 
-  test("src/lib/session.ts exists", () => {
-    assert.ok(exists("src/lib/session.ts"), "src/lib/session.ts not found");
-  });
-
   test("src/middleware.ts exists", () => {
     assert.ok(exists("src/middleware.ts"), "src/middleware.ts not found");
   });
 
-  // Auth API routes
-  test("src/app/api/auth/login/route.ts exists", () => {
-    assert.ok(exists("src/app/api/auth/login/route.ts"));
+  // Better Auth library files (Edge case 11)
+  test("src/lib/auth.ts exists", () => {
+    assert.ok(exists("src/lib/auth.ts"), "src/lib/auth.ts not found");
   });
 
-  test("src/app/api/auth/logout/route.ts exists", () => {
-    assert.ok(exists("src/app/api/auth/logout/route.ts"));
+  test("src/lib/auth-client.ts exists", () => {
+    assert.ok(exists("src/lib/auth-client.ts"), "src/lib/auth-client.ts not found");
+  });
+
+  test("src/lib/auth-access-control.ts exists", () => {
+    assert.ok(exists("src/lib/auth-access-control.ts"), "src/lib/auth-access-control.ts not found");
+  });
+
+  // Auth API routes (Edge case 11)
+  test("src/app/api/auth/[...all]/route.ts exists", () => {
+    assert.ok(exists("src/app/api/auth/[...all]/route.ts"));
+  });
+
+  test("prisma/seed.ts exists", () => {
+    assert.ok(exists("prisma/seed.ts"));
+  });
+
+  // Customer-facing auth pages (Edge case 11)
+  test("src/app/register/page.tsx exists", () => {
+    assert.ok(exists("src/app/register/page.tsx"));
+  });
+
+  test("src/app/login/page.tsx exists", () => {
+    assert.ok(exists("src/app/login/page.tsx"));
+  });
+
+  test("src/app/account/page.tsx exists", () => {
+    assert.ok(exists("src/app/account/page.tsx"));
+  });
+
+  // Owner-only employee management (Edge case 11)
+  test("src/app/admin/employees/page.tsx exists", () => {
+    assert.ok(exists("src/app/admin/employees/page.tsx"));
+  });
+
+  // Deleted iron-session files (Edge case 12)
+  test("src/lib/session.ts does NOT exist (deleted)", () => {
+    assert.ok(!exists("src/lib/session.ts"), "src/lib/session.ts should have been deleted");
+  });
+
+  test("src/app/api/auth/login/route.ts does NOT exist (deleted)", () => {
+    assert.ok(
+      !exists("src/app/api/auth/login/route.ts"),
+      "src/app/api/auth/login/route.ts should have been deleted"
+    );
+  });
+
+  test("src/app/api/auth/logout/route.ts does NOT exist (deleted)", () => {
+    assert.ok(
+      !exists("src/app/api/auth/logout/route.ts"),
+      "src/app/api/auth/logout/route.ts should have been deleted"
+    );
   });
 
   // Scripts API routes

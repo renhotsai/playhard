@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
-import { getIronSession } from "iron-session";
-import { SessionData, sessionOptions } from "@/lib/session";
+import { auth } from "@/lib/auth";
 
 class ReservationError extends Error {
   status: number;
@@ -13,9 +13,8 @@ class ReservationError extends Error {
 
 export async function GET(request: NextRequest) {
   try {
-    const response = NextResponse.next();
-    const session = await getIronSession<SessionData>(request, response, sessionOptions);
-    if (!session.isLoggedIn) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session || (session.user.role !== "owner" && session.user.role !== "employee")) {
       return NextResponse.json({ error: "未授權" }, { status: 401 });
     }
 
@@ -62,6 +61,12 @@ export async function POST(request: NextRequest) {
 
     const count = Number(playerCount);
 
+    // Submitting a reservation stays optional/anonymous -- no login
+    // required. When a customer IS logged in, associate the reservation
+    // with their Better Auth user id.
+    const session = await auth.api.getSession({ headers: await headers() });
+    const userId = session?.user.id ?? null;
+
     // Check session exists, is open, and has capacity, then create the
     // reservation and increment currentPlayers -- all inside a single
     // transaction so concurrent requests cannot both pass the capacity
@@ -91,6 +96,7 @@ export async function POST(request: NextRequest) {
           email: email.trim(),
           playerCount: count,
           note: note?.trim() ?? "",
+          userId,
         },
       });
 

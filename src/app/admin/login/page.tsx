@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { isAdminRole } from "@/lib/auth-access-control";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -15,19 +17,23 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      const { data, error: signInError } = await authClient.signIn.email({
+        email: form.email,
+        password: form.password,
       });
 
-      const data = await res.json();
-
-      if (data.ok) {
+      if (signInError) {
+        // Better Auth's returned message is English ("Invalid email or
+        // password"); the UI must always show a Traditional Chinese message.
+        setError("帳號或密碼錯誤");
+      } else if (!isAdminRole(data?.user?.role)) {
+        // Valid credentials but not an admin account (e.g. a self-registered
+        // customer). Don't leave a customer session pointed at the admin login.
+        await authClient.signOut();
+        setError("此帳號沒有管理員權限");
+      } else {
         router.push("/admin");
         router.refresh();
-      } else {
-        setError(data.error || "登入失敗");
       }
     } catch {
       setError("網路錯誤，請稍後再試");
@@ -44,15 +50,15 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">帳號</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">電子信箱</label>
             <input
-              type="text"
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="請輸入帳號"
+              placeholder="請輸入電子信箱"
               required
-              autoComplete="username"
+              autoComplete="email"
             />
           </div>
 

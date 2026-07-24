@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 interface AdminHeaderProps {
   title: string;
@@ -10,7 +11,7 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
   const router = useRouter();
 
   async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await authClient.signOut();
     router.push("/admin/login");
   }
 

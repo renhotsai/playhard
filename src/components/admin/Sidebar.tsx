@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 const navItems = [
   { href: "/admin", label: "儀表板", exact: true },
@@ -14,6 +15,12 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = authClient.useSession();
+  const isOwner = session?.user?.role === "owner";
+
+  const items = isOwner
+    ? [...navItems, { href: "/admin/employees", label: "員工管理" }]
+    : navItems;
 
   return (
     <aside className="w-56 min-h-screen bg-gray-900 text-white flex flex-col flex-shrink-0">
@@ -24,7 +31,7 @@ export default function Sidebar() {
       </div>
       <nav className="flex-1 py-4">
         <ul className="space-y-1">
-          {navItems.map((item) => {
+          {items.map((item) => {
             const isActive = item.exact
               ? pathname === item.href
               : pathname.startsWith(item.href);
