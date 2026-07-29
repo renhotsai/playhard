@@ -11,18 +11,23 @@ datasource db {
 }
 
 model Script {
-  id          String    @id @default(cuid())
-  title       String
-  description String
-  coverImage  String
-  playerCount String
-  duration    String
-  difficulty  String
-  genre       String
-  published   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  sessions    Session[]
+  id             String    @id @default(cuid())
+  title          String
+  description    String
+  storyText      String
+  coverImage     String
+  playerCount    String
+  duration       String
+  difficulty     String
+  genre          String
+  pricePerPerson Int?
+  priceGroup     Int?
+  isContactOnly  Boolean   @default(false)
+  bookingNote    String?
+  published      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sessions       Session[]
 }
 
 model Session {
