@@ -10,9 +10,10 @@ describe("businessInfo constants", () => {
     assert.equal(businessInfo.hours, "每日 08:00 - 24:00");
     assert.equal(businessInfo.email, "larpplayhardtw@gmail.com");
     assert.equal(businessInfo.lineId, "@tpn8301d");
-    assert.ok(businessInfo.lineUrl.startsWith("https://lin.ee/"));
-    assert.ok(businessInfo.mapUrl.startsWith("https://maps.app.goo.gl/"));
-    assert.ok(businessInfo.facebookUrl.includes("facebook.com"));
-    assert.ok(businessInfo.instagramUrl.includes("instagram.com"));
+    assert.equal(businessInfo.mapUrl, "https://maps.app.goo.gl/qmxgVKZxgubwQhrj7");
+    assert.equal(businessInfo.lineUrl, "https://lin.ee/nZvNhqE");
+    assert.equal(businessInfo.facebookUrl, "https://www.facebook.com/larpphtw/");
+    assert.equal(businessInfo.instagramUrl, "https://www.instagram.com/larpplayhardtw/");
+    assert.equal(businessInfo.addressNote, "近民權西路站 紅線1號出口、橘線7號出口");
   });
 });
