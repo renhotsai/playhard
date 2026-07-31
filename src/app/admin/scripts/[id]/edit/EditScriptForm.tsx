@@ -8,11 +8,16 @@ interface Script {
   id: string;
   title: string;
   description: string;
+  storyText: string;
   coverImage: string;
   playerCount: string;
   duration: string;
   difficulty: string;
   genre: string;
+  pricePerPerson: number | null;
+  priceGroup: number | null;
+  isContactOnly: boolean;
+  bookingNote: string | null;
   published: boolean;
 }
 
@@ -25,11 +30,16 @@ export default function EditScriptForm({ script }: { script: Script }) {
   const [form, setForm] = useState({
     title: script.title,
     description: script.description,
+    storyText: script.storyText,
     coverImage: script.coverImage,
     playerCount: script.playerCount,
     duration: script.duration,
     difficulty: script.difficulty,
     genre: script.genre,
+    pricePerPerson: script.pricePerPerson?.toString() ?? "",
+    priceGroup: script.priceGroup?.toString() ?? "",
+    isContactOnly: script.isContactOnly,
+    bookingNote: script.bookingNote ?? "",
     published: script.published,
   });
 
@@ -117,6 +127,20 @@ export default function EditScriptForm({ script }: { script: Script }) {
       </div>
 
       <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          完整故事與角色介紹 <span className="text-red-500">*</span>
+        </label>
+        <textarea
+          name="storyText"
+          value={form.storyText}
+          onChange={handleChange}
+          rows={10}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          required
+        />
+      </div>
+
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">封面圖片 URL</label>
         <input
           type="text"
@@ -158,6 +182,31 @@ export default function EditScriptForm({ script }: { script: Script }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">每人價格 (NT$)</label>
+          <input
+            type="number"
+            name="pricePerPerson"
+            value={form.pricePerPerson}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="例：650（與整團價格擇一填寫）"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">整團價格 (NT$)</label>
+          <input
+            type="number"
+            name="priceGroup"
+            value={form.priceGroup}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="例：4200（與每人價格擇一填寫）"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             難度 <span className="text-red-500">*</span>
           </label>
@@ -184,6 +233,34 @@ export default function EditScriptForm({ script }: { script: Script }) {
           />
         </div>
       </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          name="isContactOnly"
+          id="isContactOnly"
+          checked={form.isContactOnly}
+          onChange={handleChange}
+          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+        <label htmlFor="isContactOnly" className="text-sm font-medium text-gray-700">
+          僅接受私訊預約（不使用場次預約系統）
+        </label>
+      </div>
+
+      {form.isContactOnly && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">預約說明</label>
+          <textarea
+            name="bookingNote"
+            value={form.bookingNote}
+            onChange={handleChange}
+            rows={2}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            placeholder="例：預約請直接聯繫客服：IG @larpplayhardtw 或官方 LINE"
+          />
+        </div>
+      )}
 
       <div className="flex items-center gap-2">
         <input
