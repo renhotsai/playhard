@@ -53,10 +53,15 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
+    const { pricePerPerson, priceGroup, ...restBody } = body;
 
     const script = await prisma.script.update({
       where: { id },
-      data: body,
+      data: {
+        ...restBody,
+        pricePerPerson: pricePerPerson === "" || pricePerPerson == null ? null : Number(pricePerPerson),
+        priceGroup: priceGroup === "" || priceGroup == null ? null : Number(priceGroup),
+      },
     });
 
     return NextResponse.json(script);
