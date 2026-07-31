@@ -42,18 +42,18 @@ export default function RegisterPage() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1 flex items-center justify-center px-4 py-10">
-        <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-sm">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">會員註冊</h1>
-          <p className="text-gray-500 text-sm text-center mb-6">建立帳號以查看您的預約紀錄</p>
+        <div className="bg-surface border border-white/10 rounded-lg shadow-xl p-8 w-full max-w-sm">
+          <h1 className="text-2xl font-bold font-heading text-gold mb-2 text-center">會員註冊</h1>
+          <p className="text-white/60 text-sm text-center mb-6">建立帳號以查看您的預約紀錄</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+              <label className="block text-sm font-medium text-white/70 mb-1">姓名</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white/90 border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gold"
                 placeholder="請輸入您的姓名"
                 required
                 autoComplete="name"
@@ -61,12 +61,12 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">電子信箱</label>
+              <label className="block text-sm font-medium text-white/70 mb-1">電子信箱</label>
               <input
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white/90 border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gold"
                 placeholder="請輸入電子信箱"
                 required
                 autoComplete="email"
@@ -74,12 +74,12 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">密碼</label>
+              <label className="block text-sm font-medium text-white/70 mb-1">密碼</label>
               <input
                 type="password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white/90 border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gold"
                 placeholder="請輸入密碼"
                 required
                 autoComplete="new-password"
@@ -87,7 +87,7 @@ export default function RegisterPage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
                 {error}
               </div>
             )}
@@ -95,15 +95,15 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full bg-gold text-background py-2.5 rounded-lg font-semibold hover:bg-gold-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? "註冊中..." : "註冊"}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-white/60 mt-6">
             已經有帳號了嗎？{" "}
-            <Link href="/login" className="text-blue-600 hover:text-blue-800 font-medium">
+            <Link href="/login" className="text-gold hover:text-gold-dark font-medium">
               前往登入
             </Link>
           </p>

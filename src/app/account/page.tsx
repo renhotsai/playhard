@@ -29,25 +29,25 @@ export default async function AccountPage() {
       <main className="flex-1 max-w-4xl mx-auto px-4 py-10 w-full">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">會員中心</h1>
-            <p className="text-gray-500 text-sm mt-1">
+            <h1 className="text-2xl font-bold font-heading text-white">會員中心</h1>
+            <p className="text-white/60 text-sm mt-1">
               {session.user.name}（{session.user.email}）
             </p>
           </div>
           <LogoutButton />
         </div>
 
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <p className="text-sm text-gray-500">共 {reservations.length} 筆預約紀錄</p>
+        <div className="bg-surface border border-white/10 rounded-lg overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/10">
+            <p className="text-sm text-white/60">共 {reservations.length} 筆預約紀錄</p>
           </div>
           {reservations.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">尚無預約紀錄</div>
+            <div className="p-8 text-center text-white/50">尚無預約紀錄</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-gray-500 border-b border-gray-200 bg-gray-50">
+                  <tr className="text-left text-white/50 border-b border-white/10 bg-black/20">
                     <th className="px-6 py-3 font-medium">劇本</th>
                     <th className="px-6 py-3 font-medium">場次時間</th>
                     <th className="px-6 py-3 font-medium">人數</th>
@@ -55,13 +55,13 @@ export default async function AccountPage() {
                     <th className="px-6 py-3 font-medium">預約時間</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-white/5">
                   {reservations.map((r) => (
-                    <tr key={r.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-3 font-medium text-gray-900">
+                    <tr key={r.id} className="hover:bg-white/5">
+                      <td className="px-6 py-3 font-medium text-white">
                         {r.session.script.title}
                       </td>
-                      <td className="px-6 py-3 text-gray-700">
+                      <td className="px-6 py-3 text-white/70">
                         {new Date(r.session.date).toLocaleString("zh-TW", {
                           year: "numeric",
                           month: "short",
@@ -70,9 +70,9 @@ export default async function AccountPage() {
                           minute: "2-digit",
                         })}
                       </td>
-                      <td className="px-6 py-3 text-gray-700">{r.playerCount} 人</td>
-                      <td className="px-6 py-3 text-gray-500">{r.note || "-"}</td>
-                      <td className="px-6 py-3 text-gray-500">
+                      <td className="px-6 py-3 text-white/70">{r.playerCount} 人</td>
+                      <td className="px-6 py-3 text-white/50">{r.note || "-"}</td>
+                      <td className="px-6 py-3 text-white/50">
                         {new Date(r.createdAt).toLocaleDateString("zh-TW")}
                       </td>
                     </tr>
