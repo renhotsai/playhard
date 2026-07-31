@@ -27,99 +27,99 @@ export default async function ScriptDetailPage({
     notFound();
   }
 
+  const priceLabel =
+    script.pricePerPerson != null
+      ? `NT$${script.pricePerPerson} / 人`
+      : script.priceGroup != null
+        ? `NT$${script.priceGroup} / 團`
+        : null;
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1 max-w-4xl mx-auto px-4 py-10 w-full">
-        <Link href="/scripts" className="text-blue-600 hover:text-blue-800 text-sm mb-6 inline-block">
+        <Link href="/scripts" className="text-gold hover:text-gold-dark text-sm mb-6 inline-block">
           ← 返回劇本列表
         </Link>
 
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {/* Cover Image */}
+        <div className="bg-surface border border-white/10 rounded-lg overflow-hidden">
           {script.coverImage && (
-            <div className="relative h-72 bg-gray-200">
-              <Image
-                src={script.coverImage}
-                alt={script.title}
-                fill
-                className="object-cover"
-              />
+            <div className="relative h-72 bg-black/40">
+              <Image src={script.coverImage} alt={script.title} fill className="object-cover" />
             </div>
           )}
 
           <div className="p-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{script.title}</h1>
+            <h1 className="text-3xl font-bold font-heading text-white mb-4">{script.title}</h1>
 
-            {/* Meta info */}
-            <div className="flex flex-wrap gap-3 mb-6">
-              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                {script.genre}
-              </span>
-              <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
-                {script.difficulty}
-              </span>
-              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                👥 {script.playerCount}
-              </span>
-              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                ⏱ {script.duration}
-              </span>
-            </div>
-
-            {/* Description */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-3">劇本簡介</h2>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{script.description}</p>
-            </div>
-
-            {/* Sessions */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">可預約場次</h2>
-              {script.sessions.length === 0 ? (
-                <div className="bg-gray-50 rounded-lg p-6 text-center text-gray-500">
-                  目前沒有開放中的場次，請關注最新公告
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {script.sessions.map((session) => {
-                    const spotsLeft = session.maxPlayers - session.currentPlayers;
-                    return (
-                      <div
-                        key={session.id}
-                        className="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                      >
-                        <div>
-                          <p className="font-semibold text-gray-900">
-                            {new Date(session.date).toLocaleString("zh-TW", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                              weekday: "short",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </p>
-                          <p className="text-sm text-gray-500 mt-1">
-                            剩餘名額：{spotsLeft} / {session.maxPlayers}
-                          </p>
-                        </div>
-                        <Link
-                          href={`/scripts/${id}/reserve/${session.id}`}
-                          className={`inline-block text-center px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
-                            spotsLeft > 0
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-gray-200 text-gray-500 cursor-not-allowed pointer-events-none"
-                          }`}
-                        >
-                          {spotsLeft > 0 ? "我要預約" : "名額已滿"}
-                        </Link>
-                      </div>
-                    );
-                  })}
-                </div>
+            <div className="flex flex-wrap gap-3 mb-6 items-center">
+              <span className="bg-gold/15 text-gold px-3 py-1 rounded-full text-sm font-medium">{script.genre}</span>
+              <span className="bg-white/10 text-white/70 px-3 py-1 rounded-full text-sm">{script.difficulty}</span>
+              <span className="bg-white/10 text-white/70 px-3 py-1 rounded-full text-sm">👥 {script.playerCount}</span>
+              <span className="bg-white/10 text-white/70 px-3 py-1 rounded-full text-sm">⏱ {script.duration}</span>
+              {priceLabel && (
+                <span className="text-gold font-semibold text-lg ml-auto">{priceLabel}</span>
               )}
             </div>
+
+            <div className="mb-8">
+              <h2 className="text-xl font-semibold font-heading text-white mb-3">劇本簡介</h2>
+              <p className="text-white/70 leading-relaxed whitespace-pre-line">{script.storyText}</p>
+            </div>
+
+            {script.isContactOnly ? (
+              <div className="bg-gold/10 border border-gold/30 rounded-lg p-6">
+                <h2 className="text-xl font-semibold font-heading text-gold mb-3">如何預約</h2>
+                <p className="text-white/80 whitespace-pre-line">{script.bookingNote}</p>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-xl font-semibold font-heading text-white mb-4">可預約場次</h2>
+                {script.sessions.length === 0 ? (
+                  <div className="bg-black/20 rounded-lg p-6 text-center text-white/50">
+                    目前沒有開放中的場次，請關注最新公告
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {script.sessions.map((session) => {
+                      const spotsLeft = session.maxPlayers - session.currentPlayers;
+                      return (
+                        <div
+                          key={session.id}
+                          className="border border-white/10 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                        >
+                          <div>
+                            <p className="font-semibold text-white">
+                              {new Date(session.date).toLocaleString("zh-TW", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                weekday: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                            <p className="text-sm text-white/50 mt-1">
+                              剩餘名額：{spotsLeft} / {session.maxPlayers}
+                            </p>
+                          </div>
+                          <Link
+                            href={`/scripts/${id}/reserve/${session.id}`}
+                            className={`inline-block text-center px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
+                              spotsLeft > 0
+                                ? "bg-gold text-background hover:bg-gold-dark"
+                                : "bg-white/10 text-white/40 cursor-not-allowed pointer-events-none"
+                            }`}
+                          >
+                            {spotsLeft > 0 ? "我要預約" : "名額已滿"}
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </main>
