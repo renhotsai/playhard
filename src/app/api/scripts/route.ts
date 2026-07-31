@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { coercePriceField } from "@/lib/scriptPriceFields";
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,17 +30,36 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, coverImage, playerCount, duration, difficulty, genre, published } = body;
+    const {
+      title,
+      description,
+      storyText,
+      coverImage,
+      playerCount,
+      duration,
+      difficulty,
+      genre,
+      pricePerPerson,
+      priceGroup,
+      isContactOnly,
+      bookingNote,
+      published,
+    } = body;
 
     const script = await prisma.script.create({
       data: {
         title,
         description,
+        storyText,
         coverImage,
         playerCount,
         duration,
         difficulty,
         genre,
+        pricePerPerson: coercePriceField(pricePerPerson),
+        priceGroup: coercePriceField(priceGroup),
+        isContactOnly: isContactOnly ?? false,
+        bookingNote: bookingNote || null,
         published: published ?? false,
       },
     });

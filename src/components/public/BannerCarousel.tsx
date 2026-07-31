@@ -29,8 +29,10 @@ export default function BannerCarousel({ banners }: BannerCarouselProps) {
 
   if (banners.length === 0) {
     return (
-      <div className="bg-gray-800 h-64 flex items-center justify-center">
-        <p className="text-gray-400 text-lg">歡迎來到 PlayHard 劇本殺</p>
+      <div className="bg-background h-72 md:h-96 flex flex-col items-center justify-center gap-2 border-b border-white/10">
+        <p className="font-heading text-3xl text-gold tracking-wide">PLAY HARD</p>
+        <p className="text-white/70 text-lg">玩硬劇本遊戲館</p>
+        <p className="text-white/40 text-xs tracking-[0.3em] uppercase">Live Action Role Playing</p>
       </div>
     );
   }

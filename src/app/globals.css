@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: #16161a;
+  --color-surface: #232326;
+  --color-gold: #e8b84b;
+  --color-gold-dark: #c99a2e;
+}
+
+/* `inline` because --font-heading/--font-body are runtime CSS variables set by
+   next/font's `variable` option on <html> (Task 9 Step 2) -- Tailwind v4 needs
+   `@theme inline` (not plain `@theme`) to alias a token to a var(...) that
+   isn't a static value known at build time. */
+@theme inline {
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+/* Tailwind v4 Preflight sets `color: inherit` on form controls. The app
+   body carries `text-white` for the public dark-themed pages, which would
+   otherwise make every input/textarea/select in the (light-themed) admin
+   panel, login, register, and reservation pages render white-on-white.
+   Give form controls a sane default dark text color regardless of the
+   ambient text color on <body>. */
+@layer base {
+  input, textarea, select {
+    color: var(--color-gray-900, #111827);
+  }
+}

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { buildScriptUpdateData } from "@/lib/scriptPriceFields";
 
 export async function GET(
   request: NextRequest,
@@ -56,7 +57,7 @@ export async function PUT(
 
     const script = await prisma.script.update({
       where: { id },
-      data: body,
+      data: buildScriptUpdateData(body),
     });
 
     return NextResponse.json(script);
