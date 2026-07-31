@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: #16161a;
+  --color-surface: #232326;
+  --color-gold: #e8b84b;
+  --color-gold-dark: #c99a2e;
+}
+
+/* `inline` because --font-heading/--font-body are runtime CSS variables set by
+   next/font's `variable` option on <html> (Task 9 Step 2) -- Tailwind v4 needs
+   `@theme inline` (not plain `@theme`) to alias a token to a var(...) that
+   isn't a static value known at build time. */
+@theme inline {
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
