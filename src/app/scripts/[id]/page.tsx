@@ -4,6 +4,40 @@ import Footer from "@/components/public/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
+
+// Matches http(s) URLs embedded in free-form Chinese text. Stops at whitespace
+// and at punctuation (full/half-width) that commonly follows a URL in the
+// seeded booking notes (e.g. a closing full-width parenthesis or period), so
+// trailing punctuation is never swallowed into the link.
+const URL_PATTERN = /https?:\/\/[^\s）」，。、]+/g;
+
+function renderBookingNote(note: string): ReactNode[] {
+  const parts = note.split(URL_PATTERN);
+  const urls = note.match(URL_PATTERN) ?? [];
+
+  const nodes: ReactNode[] = [];
+  parts.forEach((text, i) => {
+    if (text) {
+      nodes.push(<span key={`t${i}`}>{text}</span>);
+    }
+    const url = urls[i];
+    if (url) {
+      nodes.push(
+        <a
+          key={`u${i}`}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gold hover:text-gold-dark underline"
+        >
+          {url}
+        </a>,
+      );
+    }
+  });
+  return nodes;
+}
 
 export default async function ScriptDetailPage({
   params,
@@ -70,7 +104,9 @@ export default async function ScriptDetailPage({
             {script.isContactOnly ? (
               <div className="bg-gold/10 border border-gold/30 rounded-lg p-6">
                 <h2 className="text-xl font-semibold font-heading text-gold mb-3">如何預約</h2>
-                <p className="text-white/80 whitespace-pre-line">{script.bookingNote}</p>
+                <p className="text-white/80 whitespace-pre-line">
+                  {script.bookingNote ? renderBookingNote(script.bookingNote) : null}
+                </p>
               </div>
             ) : (
               <div>
