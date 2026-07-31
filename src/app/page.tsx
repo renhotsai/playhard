@@ -4,6 +4,7 @@ import Footer from "@/components/public/Footer";
 import BannerCarousel from "@/components/public/BannerCarousel";
 import AnnouncementList from "@/components/public/AnnouncementList";
 import ScriptCard from "@/components/public/ScriptCard";
+import { businessInfo } from "@/lib/business-info";
 import Link from "next/link";
 
 export default async function HomePage() {
@@ -32,16 +33,15 @@ export default async function HomePage() {
 
         <div className="max-w-7xl mx-auto px-4 py-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            {/* Featured Scripts */}
             <section className="lg:col-span-2">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">精選劇本</h2>
-                <Link href="/scripts" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                <h2 className="text-2xl font-bold font-heading text-white">精選劇本</h2>
+                <Link href="/scripts" className="text-gold hover:text-gold-dark text-sm font-medium">
                   查看全部 →
                 </Link>
               </div>
               {featuredScripts.length === 0 ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+                <div className="bg-surface border border-white/10 rounded-lg p-8 text-center text-white/50">
                   目前尚無上架劇本
                 </div>
               ) : (
@@ -53,12 +53,21 @@ export default async function HomePage() {
               )}
             </section>
 
-            {/* Announcements */}
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">最新公告</h2>
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">最新公告</h2>
               <AnnouncementList announcements={announcements} />
             </section>
           </div>
+
+          <section className="mt-16 bg-surface border border-white/10 rounded-lg p-8 text-center">
+            <h2 className="text-xl font-bold font-heading text-gold mb-3">{businessInfo.name}</h2>
+            <p className="text-white/70">
+              {businessInfo.hours} ・ {businessInfo.address}
+            </p>
+            <Link href="/about" className="inline-block mt-4 text-gold hover:text-gold-dark text-sm underline">
+              查看完整營業資訊 →
+            </Link>
+          </section>
         </div>
       </main>
       <Footer />
