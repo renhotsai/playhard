@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { coercePriceField } from "@/lib/scriptPriceFields";
 
 export async function GET(request: NextRequest) {
   try {
@@ -55,8 +56,8 @@ export async function POST(request: NextRequest) {
         duration,
         difficulty,
         genre,
-        pricePerPerson: pricePerPerson === "" || pricePerPerson == null ? null : Number(pricePerPerson),
-        priceGroup: priceGroup === "" || priceGroup == null ? null : Number(priceGroup),
+        pricePerPerson: coercePriceField(pricePerPerson),
+        priceGroup: coercePriceField(priceGroup),
         isContactOnly: isContactOnly ?? false,
         bookingNote: bookingNote || null,
         published: published ?? false,

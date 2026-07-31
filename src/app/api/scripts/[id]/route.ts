@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { buildScriptUpdateData } from "@/lib/scriptPriceFields";
 
 export async function GET(
   request: NextRequest,
@@ -53,15 +54,10 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { pricePerPerson, priceGroup, ...restBody } = body;
 
     const script = await prisma.script.update({
       where: { id },
-      data: {
-        ...restBody,
-        pricePerPerson: pricePerPerson === "" || pricePerPerson == null ? null : Number(pricePerPerson),
-        priceGroup: priceGroup === "" || priceGroup == null ? null : Number(priceGroup),
-      },
+      data: buildScriptUpdateData(body),
     });
 
     return NextResponse.json(script);

@@ -188,6 +188,7 @@ export default function EditScriptForm({ script }: { script: Script }) {
             name="pricePerPerson"
             value={form.pricePerPerson}
             onChange={handleChange}
+            min="0"
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="例：650（與整團價格擇一填寫）"
           />
@@ -199,6 +200,7 @@ export default function EditScriptForm({ script }: { script: Script }) {
             name="priceGroup"
             value={form.priceGroup}
             onChange={handleChange}
+            min="0"
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="例：4200（與每人價格擇一填寫）"
           />
