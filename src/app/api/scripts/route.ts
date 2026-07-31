@@ -29,17 +29,36 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, coverImage, playerCount, duration, difficulty, genre, published } = body;
+    const {
+      title,
+      description,
+      storyText,
+      coverImage,
+      playerCount,
+      duration,
+      difficulty,
+      genre,
+      pricePerPerson,
+      priceGroup,
+      isContactOnly,
+      bookingNote,
+      published,
+    } = body;
 
     const script = await prisma.script.create({
       data: {
         title,
         description,
+        storyText,
         coverImage,
         playerCount,
         duration,
         difficulty,
         genre,
+        pricePerPerson: pricePerPerson != null ? Number(pricePerPerson) : null,
+        priceGroup: priceGroup != null ? Number(priceGroup) : null,
+        isContactOnly: isContactOnly ?? false,
+        bookingNote: bookingNote || null,
         published: published ?? false,
       },
     });
